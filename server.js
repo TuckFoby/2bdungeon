@@ -203,36 +203,9 @@ app.post('/register', checkNotAuthenticated, registerLimiter, [
     }
 });
 
-
-/*
-app.post('/register', checkNotAuthenticated, registerLimiter,[
-    body('name').trim().isLength({min:3}).escape(),
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({min:8}).withMessage('Password must be at least 8 characters')
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()});
-    }
-
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const user = new User({
-            userID: uuidv4(), // using uuid for unique user ids
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword
-        });
-        await user.save();
-        res.redirect('/login');
-    } catch (e) {
-        console.log(e);
-        res.redirect('/register');
-    }
-});
-*/
-
 app.post('/logout', (req, res, next) => {
+    next(); // skipping csrf middleware
+}, (req, res) => {
     req.logout((err) => {
         if (err) {
             return next(err);
