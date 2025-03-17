@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet</title>
+    <link rel="stylesheet" href="CMstyle.css">
+</head>
+
+<body>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" id="username" value="<%- name %>">
+    <header>
+        <form class="logo" action="/" method="GET">
+            <button type="submit">
+                <img src="images/tobyco-logo.png" alt="Logo" style="width: 200px; height: 200px;">
+            </button>
+        </form>
+        <nav class="navigation">
+            <form id="index-button" action="/" method="GET">
+                <button type="submit">Home</button>
+            </form>
+            <form id="falloutCM-button" action="/falloutCM" method="GET">
+                <button type="submit">Fallout Character Manager</button>
+            </form>
+            <form id="logout-button" action="/logout" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit">Log Out</button>
+            </form>
+        </nav>
+    </header>
+    <div class="header">
+        <div class="character-info">
+            <label for="character-name">Character Name:</label>
+            <input type="text" id="character-name" name="character-name">
+        </div>
+        <div class="xp-info">
+            <div class="xp-earned">
+                <label for="xp-earned">XP Earned:</label>
+                <input type="number" id="xp-earned" name="xp-earned">
+            </div>
+            <div class="xp-next-level">
+                <label for="xp-next-level">XP to Next Level:</label>
+                <input type="number" id="xp-next-level" name="xp-next-level">
+            </div>
+        </div>
+        <div class="origin-level">
+            <div class="origin">
+                <label for="origin">Origin:</label>
+                <input type="text" id="origin" name="origin">
+            </div>
+            <div class="level">
+                <label for="level">Level:</label>
+                <input type="number" id="level" name="level">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="special">
+        <div class="stat">Strength: <input type="number" id="Strength"></div>
+        <div class="stat">Perception: <input type="number" id="Perception"></div>
+        <div class="stat">Endurance: <input type="number" id="Endurance"></div>
+        <div class="stat">Charisma: <input type="number" id="Charisma"></div>
+        <div class="stat">Intelligence: <input type="number" id="Intelligence"></div>
+        <div class="stat">Agility: <input type="number" id="Agility"></div>
+        <div class="stat">Luck: <input type="number" id="Luck"></div>
+    </div>
+
+    <div class="chatbox-container">
+        <div class="chatbox">
+          <div class="chatbox-messages" id="chatbox-messages">
+            <!-- Messages will appear here -->
+          </div>
+          <div class="chatbox-input">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+          </div>
+        </div>
+    </div>
+
+    <div id="output-div"></div>
+
+    <div class="content">
+        <table class="skills-table">
+            <!-- Header row with column labels -->
+            <thead>
+                <tr>
+                    <th>Skill</th>
+                    <th>TAG</th>
+                    <th>Rank</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Athletics [STR]</td>
+                    <td><input type="checkbox" id="tag-athletics"></td>
+                    <td><input type="number" id="Athletics" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Barter [CHA]</td>
+                    <td><input type="checkbox" id="tag-barter"></td>
+                    <td><input type="number" id="Barter" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Big Guns [END]</td>
+                    <td><input type="checkbox" id="tag-big-guns"></td>
+                    <td><input type="number" id="Big Guns" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Energy Weapons [PER]</td>
+                    <td><input type="checkbox" id="tag-energy-weapons"></td>
+                    <td><input type="number" id="Energy Weapons" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Explosives [PER]</td>
+                    <td><input type="checkbox" id="tag-explosives"></td>
+                    <td><input type="number" id="Explosives" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Lockpick [PER]</td>
+                    <td><input type="checkbox" id="tag-lockpick"></td>
+                    <td><input type="number" id="Lockpick" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Medicine [INT]</td>
+                    <td><input type="checkbox" id="tag-medicine"></td>
+                    <td><input type="number" id="Medicine" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Melee Weapons [STR]</td>
+                    <td><input type="checkbox" id="tag-melee-weapons"></td>
+                    <td><input type="number" id="Melee Weapons" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Pilot [PER]</td>
+                    <td><input type="checkbox" id="tag-pilot"></td>
+                    <td><input type="number" id="Pilot" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Repair [INT]</td>
+                    <td><input type="checkbox" id="tag-repair"></td>
+                    <td><input type="number" id="Repair" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Science [INT]</td>
+                    <td><input type="checkbox" id="tag-science"></td>
+                    <td><input type="number" id="Science" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Small Guns [AGI]</td>
+                    <td><input type="checkbox" id="tag-small-guns"></td>
+                    <td><input type="number" id="Small Guns" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Sneak [AGI]</td>
+                    <td><input type="checkbox" id="tag-sneak"></td>
+                    <td><input type="number" id="Sneak" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Speech [CHA]</td>
+                    <td><input type="checkbox" id="tag-speech"></td>
+                    <td><input type="number" id="Speech" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Survival [END]</td>
+                    <td><input type="checkbox" id="tag-survival"></td>
+                    <td><input type="number" id="Survival" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Throwing [AGI]</td>
+                    <td><input type="checkbox" id="tag-throwing"></td>
+                    <td><input type="number" id="Throwing" value="0" min="0" max="6" step="1"></td>
+                </tr>
+                <tr>
+                    <td>Unarmed [STR]</td>
+                    <td><input type="checkbox" id="tag-unarmed"></td>
+                    <td><input type="number" id="Unarmed" value="0" min="0" max="6" step="1"></td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Buttons Area -->
+        <div id="save-container" style="margin-left: 20px; align-self: flex-start;">
+            <button id="save-button">Save</button>
+        </div>
+        <div id="load-container" style="margin-left: 20px; align-self: flex-start;">
+            <button id="load-button">Load</button>
+        </div>
+
+        <div class="combat-stats">
+            <!-- Header Area for Melee Damage, Defense, Initiative -->
+            <div class="body-header">
+                <div>
+                    <label for="melee-damage">Melee Damage</label><br>
+                    <input type="number" id="melee-damage" value="0">
+                </div>
+                <div>
+                    <label for="defense">Defense</label><br>
+                    <input type="number" id="defense" value="0">
+                </div>
+                <div>
+                    <label for="initiative">Initiative</label><br>
+                    <input type="number" id="initiative" value="0">
+                </div>
+                <div>
+                    <label for="luck-points">Luck Points</label><br>
+                    <input type="number" id="luck-points" value="0">
+                </div>
+                <div>
+                    <label for="APTotal">AP Total</label><br>
+                    <input type="number" id="ap-total" value="0" min="0" max="6">
+                </div>
+            </div>
+            <!-- Body Grid Layout for Limbs -->
+            <div class="body-grid">
+
+                <div class="limb-section">
+                    <h4>Left Arm (9-11)</h4>
+                    <div>
+                        <label for="left-arm-phys-dr">Phys. DR</label>
+                        <input type="number" id="left-arm-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-arm-rad-dr">Rad. DR</label>
+                        <input type="number" id="left-arm-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-arm-en-dr">En. DR</label>
+                        <input type="number" id="left-arm-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-arm-hp">HP</label>
+                        <input type="number" id="left-arm-hp" value="0">
+                    </div>
+                </div>
+
+                <div class="limb-section">
+                    <h4>Head (1-2)</h4>
+                    <div>
+                        <label for="head-phys-dr">Phys. DR</label>
+                        <input type="number" id="head-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="head-rad-dr">Rad. DR</label>
+                        <input type="number" id="head-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="head-en-dr">En. DR</label>
+                        <input type="number" id="head-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="head-hp">HP</label>
+                        <input type="number" id="head-hp" value="0">
+                    </div>
+                </div>
+
+                <div class="limb-section">
+                    <h4>Right Arm (12-14)</h4>
+                    <div>
+                        <label for="right-arm-phys-dr">Phys. DR</label>
+                        <input type="number" id="right-arm-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-arm-rad-dr">Rad. DR</label>
+                        <input type="number" id="right-arm-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-arm-en-dr">En. DR</label>
+                        <input type="number" id="right-arm-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-arm-hp">HP</label>
+                        <input type="number" id="right-arm-hp" value="0">
+                    </div>
+                </div>
+
+                <div class="limb-section">
+                    <h4>Left Leg (15-17)</h4>
+                    <div>
+                        <label for="left-leg-phys-dr">Phys. DR</label>
+                        <input type="number" id="left-leg-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-leg-rad-dr">Rad. DR</label>
+                        <input type="number" id="left-leg-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-leg-en-dr">En. DR</label>
+                        <input type="number" id="left-leg-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="left-leg-hp">HP</label>
+                        <input type="number" id="left-leg-hp" value="0">
+                    </div>
+                </div>
+
+                <!-- Placeholder for the character's image
+                <div class="center-image">
+                    <img src="images/vault-boy.png" alt="Character Image">
+                </div>
+
+                Placeholder for the character's image -->
+
+                <div class="center-image">
+                    <img src="images/vault-boy.png" alt="Character Image">
+                </div>
+
+                <div class="limb-section">
+                    <h4>Right Leg (18-20)</h4>
+                    <div>
+                        <label for="right-leg-phys-dr">Phys. DR</label>
+                        <input type="number" id="right-leg-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-leg-rad-dr">Rad. DR</label>
+                        <input type="number" id="right-leg-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-leg-en-dr">En. DR</label>
+                        <input type="number" id="right-leg-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="right-leg-hp">HP</label>
+                        <input type="number" id="right-leg-hp" value="0">
+                    </div>
+                </div>
+
+                <div class="limb-section">
+                </div>
+
+                <div class="limb-section">
+                    <h4>Torso (3-8)</h4>
+                    <div>
+                        <label for="torso-phys-dr">Phys. DR</label>
+                        <input type="number" id="torso-phys-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="torso-rad-dr">Rad. DR</label>
+                        <input type="number" id="torso-rad-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="torso-en-dr">En. DR</label>
+                        <input type="number" id="torso-en-dr" value="0">
+                    </div>
+                    <div>
+                        <label for="torso-hp">HP</label>
+                        <input type="number" id="torso-hp" value="0">
+                    </div>
+                </div>
+                <div class="limb-section"></div>
+            </div>
+        </div>
+
+        <div class="dice">
+            <table class="dice-table">
+                <!-- Header row with column labels -->
+                <thead>
+                    <tr>
+                        <th class="dice-table-skill-th">Skill</th>
+                        <th class="dice-table-ap-th">Action Points</th>
+                        <th class="dice-table-roll-th">Roll</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="dice-table-skill-td">Athletics [STR]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Athletics-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Athletics-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Barter [CHA]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Barter-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Barter-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Big Guns [END]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Big-Guns-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Big-Guns-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Energy Weapons [PER]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Energy-Weapons-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Energy-Weapons-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Explosives [PER]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Explosives-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Explosives-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Lockpick [PER]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Lockpick-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Lockpick-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Medicine [INT]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Medicine-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Medicine-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Melee Weapons [STR]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Melee-Weapons-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Melee-Weapons-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Pilot [PER]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Pilot-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Pilot-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Repair [INT]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Repair-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Repair-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Science [INT]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Science-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Science-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Small Guns [AGI]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Small-Guns-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Small-Guns-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Sneak [AGI]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Sneak-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Sneak-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Speech [CHA]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Speech-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Speech-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Survival [END]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Survival-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Survival-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Throwing [AGI]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Throwing-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Throwing-roll-button" value="roll"></td>
+                    </tr>
+                    <tr>
+                        <td class="dice-table-skill-td">Unarmed [STR]</td>
+                        <td class="dice-table-ap-td"><input type="number" value="0" min="0" max="6" id="Unarmed-ap"></td>
+                        <td class="dice-table-roll-td"><input type="button" id="Unarmed-roll-button" value="roll"></td>
+                    </tr>
+                    
+                    
+                </tbody>                
+            </table>
+        </div>
+        
+    </div>
+
+    <div class="weaponsAndAmmo">
+        <table class="weapons-table">
+            <!-- Header row with column labels -->
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Skill</th>
+                    <th>Target Number</th>
+                    <th>TAG</th>
+                    <th>Damage</th>
+                    <th>Effects</th>
+                    <th>Type</th>
+                    <th>Rate</th>
+                    <th>Range</th>
+                    <th>Qualities</th>
+                    <th>Ammo</th>
+                    <th>Weight</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="wep-name"></td>
+                    <td>
+                        <select name="wep-skill">
+                            <option value="" disabled selected>Select a Weapon Skill</option>
+                            <option value="Big Guns">Big Guns</option>
+                            <option value="Energy Weapons">Energy Weapons</option>
+                            <option value="Melee">Melee</option>
+                            <option value="Small Guns">Small Guns</option>
+                            <option value="Throwing">Throwing</option>
+                            <option value="Unarmed">Unarmed</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-target-number" value="0" min="0" max="10"></td>
+                    <td><input type="checkbox" name="wep-tag"></td>
+                    <td><input type="number" name="wep-damage" value="0" min="0" max="10" step="1"></td>
+                    <td>
+                        <select name="wep-effects" multiple>
+                            <option value="" disabled selected>Select Damage Effects</option>
+                            <option value="wepEffectVicious">Vicious</option>
+                            <option value="wepEffectBurst">Burst</option>
+                            <option value="wepEffectPiercing1">Piercing 1</option>
+                            <option value="wepEffectSpread">Spread</option>
+                            <option value="wepEffectBreaking">Breaking</option>
+                            <option value="wepEffectStun">Stun</option>
+                            <option value="wepEffectRadioactive">Radioactive</option>
+                            <option value="wepEffectPersistent">Persistent</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-types">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="wepPhysical">Physical</option>
+                            <option value="wepEnergy">Energy</option>
+                            <option value="wepRadiation">Radiation</option>
+                            <option value="wepPhysicalEnergy">Physical/Energy</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wepRate" value="0" min="0" max="6" step="1"></td>
+                    <td>
+                        <select name="wep-range">
+                            <option value="" disabled selected>Select Range</option>
+                            <option value="wepRangeClose">Close</option>
+                            <option value="wepRangeMedium">Medium</option>
+                            <option value="wepRangeLong">Long</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-qualities" multiple>
+                            <option value="" disabled selected>Select Weapon Qualities</option>
+                            <option value="wepQualityCloseQuarters">Close Quarters</option>
+                            <option value="wepQualityReliable">Reliable</option>
+                            <option value="wepQualityTwo-Handed">Two-Handed</option>
+                            <option value="wepQualityInaccurate">Inaccurate</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-ammo">
+                            <option value="" disabled selected>Select Ammo Type</option>
+                            <option value="wepAmmoNA">N/A</option>
+                            <option value="wepAmmo38">.38</option>
+                            <option value="wepAmmo10mm">10mm</option>
+                            <option value="wepAmmo45">.45</option>
+                            <option value="wepAmmo556">5.56mm</option>
+                            <option value="wepAmmo308">.308</option>
+                            <option value="wepAmmo44">.44 Magnum</option>
+                            <option value="wepAmmoShell">Shotgun Shell</option>
+                            <option value="wepAmmo2mm">2mm EC</option>
+                            <option value="wepAmmoFlamer">Flamer Fuel</option>
+                            <option value="wepAmmoGamma">Gamma Round</option>
+                            <option value="wepAmmoFusion">Fusion Cell</option>
+                            <option value="wepAmmoPlasma">Plasma Cartridge</option>
+                            <option value="wepAmmoCryo">Cryo Cell</option>
+                            <option value="wepAmmoCore">Fusion Core</option>
+                            <option value="wepAmmoMissile">Missile</option>
+                            <option value="wepAmmoNuke">Mini Nuke</option>
+                            <option value="wepAmmoFlare">Flare</option>
+                            <option value="wepAmmoSyringer">Syringer Ammo</option>
+                            <option value="wepAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-weight" value="0"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="wep-name"></td>
+                    <td>
+                        <select name="wep-skill">
+                            <option value="" disabled selected>Select a Weapon Skill</option>
+                            <option value="Big Guns">Big Guns</option>
+                            <option value="Energy Weapons">Energy Weapons</option>
+                            <option value="Melee">Melee</option>
+                            <option value="Small Guns">Small Guns</option>
+                            <option value="Throwing">Throwing</option>
+                            <option value="Unarmed">Unarmed</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-target-number" value="0" min="0" max="10"></td>
+                    <td><input type="checkbox" name="wep-tag"></td>
+                    <td><input type="number" name="wep-damage" value="0" min="0" max="10" step="1"></td>
+                    <td>
+                        <select name="wep-effects" multiple>
+                            <option value="" disabled selected>Select Damage Effects</option>
+                            <option value="wepEffectVicious">Vicious</option>
+                            <option value="wepEffectBurst">Burst</option>
+                            <option value="wepEffectPiercing1">Piercing 1</option>
+                            <option value="wepEffectSpread">Spread</option>
+                            <option value="wepEffectBreaking">Breaking</option>
+                            <option value="wepEffectStun">Stun</option>
+                            <option value="wepEffectRadioactive">Radioactive</option>
+                            <option value="wepEffectPersistent">Persistent</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-types">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="wepPhysical">Physical</option>
+                            <option value="wepEnergy">Energy</option>
+                            <option value="wepRadiation">Radiation</option>
+                            <option value="wepPhysicalEnergy">Physical/Energy</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wepRate" value="0" min="0" max="6" step="1"></td>
+                    <td>
+                        <select name="wep-range">
+                            <option value="" disabled selected>Select Range</option>
+                            <option value="wepRangeClose">Close</option>
+                            <option value="wepRangeMedium">Medium</option>
+                            <option value="wepRangeLong">Long</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-qualities" multiple>
+                            <option value="" disabled selected>Select Weapon Qualities</option>
+                            <option value="wepQualityCloseQuarters">Close Quarters</option>
+                            <option value="wepQualityReliable">Reliable</option>
+                            <option value="wepQualityTwo-Handed">Two-Handed</option>
+                            <option value="wepQualityInaccurate">Inaccurate</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-ammo">
+                            <option value="" disabled selected>Select Ammo Type</option>
+                            <option value="wepAmmoNA">N/A</option>
+                            <option value="wepAmmo38">.38</option>
+                            <option value="wepAmmo10mm">10mm</option>
+                            <option value="wepAmmo45">.45</option>
+                            <option value="wepAmmo556">5.56mm</option>
+                            <option value="wepAmmo308">.308</option>
+                            <option value="wepAmmo44">.44 Magnum</option>
+                            <option value="wepAmmoShell">Shotgun Shell</option>
+                            <option value="wepAmmo2mm">2mm EC</option>
+                            <option value="wepAmmoFlamer">Flamer Fuel</option>
+                            <option value="wepAmmoGamma">Gamma Round</option>
+                            <option value="wepAmmoFusion">Fusion Cell</option>
+                            <option value="wepAmmoPlasma">Plasma Cartridge</option>
+                            <option value="wepAmmoCryo">Cryo Cell</option>
+                            <option value="wepAmmoCore">Fusion Core</option>
+                            <option value="wepAmmoMissile">Missile</option>
+                            <option value="wepAmmoNuke">Mini Nuke</option>
+                            <option value="wepAmmoFlare">Flare</option>
+                            <option value="wepAmmoSyringer">Syringer Ammo</option>
+                            <option value="wepAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-weight" value="0"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="wep-name"></td>
+                    <td>
+                        <select name="wep-skill">
+                            <option value="" disabled selected>Select a Weapon Skill</option>
+                            <option value="Big Guns">Big Guns</option>
+                            <option value="Energy Weapons">Energy Weapons</option>
+                            <option value="Melee">Melee</option>
+                            <option value="Small Guns">Small Guns</option>
+                            <option value="Throwing">Throwing</option>
+                            <option value="Unarmed">Unarmed</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-target-number" value="0" min="0" max="10"></td>
+                    <td><input type="checkbox" name="wep-tag"></td>
+                    <td><input type="number" name="wep-damage" value="0" min="0" max="10" step="1"></td>
+                    <td>
+                        <select name="wep-effects" multiple>
+                            <option value="" disabled selected>Select Damage Effects</option>
+                            <option value="wepEffectVicious">Vicious</option>
+                            <option value="wepEffectBurst">Burst</option>
+                            <option value="wepEffectPiercing1">Piercing 1</option>
+                            <option value="wepEffectSpread">Spread</option>
+                            <option value="wepEffectBreaking">Breaking</option>
+                            <option value="wepEffectStun">Stun</option>
+                            <option value="wepEffectRadioactive">Radioactive</option>
+                            <option value="wepEffectPersistent">Persistent</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-types">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="wepPhysical">Physical</option>
+                            <option value="wepEnergy">Energy</option>
+                            <option value="wepRadiation">Radiation</option>
+                            <option value="wepPhysicalEnergy">Physical/Energy</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wepRate" value="0" min="0" max="6" step="1"></td>
+                    <td>
+                        <select name="wep-range">
+                            <option value="" disabled selected>Select Range</option>
+                            <option value="wepRangeClose">Close</option>
+                            <option value="wepRangeMedium">Medium</option>
+                            <option value="wepRangeLong">Long</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-qualities" multiple>
+                            <option value="" disabled selected>Select Weapon Qualities</option>
+                            <option value="wepQualityCloseQuarters">Close Quarters</option>
+                            <option value="wepQualityReliable">Reliable</option>
+                            <option value="wepQualityTwo-Handed">Two-Handed</option>
+                            <option value="wepQualityInaccurate">Inaccurate</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-ammo">
+                            <option value="" disabled selected>Select Ammo Type</option>
+                            <option value="wepAmmoNA">N/A</option>
+                            <option value="wepAmmo38">.38</option>
+                            <option value="wepAmmo10mm">10mm</option>
+                            <option value="wepAmmo45">.45</option>
+                            <option value="wepAmmo556">5.56mm</option>
+                            <option value="wepAmmo308">.308</option>
+                            <option value="wepAmmo44">.44 Magnum</option>
+                            <option value="wepAmmoShell">Shotgun Shell</option>
+                            <option value="wepAmmo2mm">2mm EC</option>
+                            <option value="wepAmmoFlamer">Flamer Fuel</option>
+                            <option value="wepAmmoGamma">Gamma Round</option>
+                            <option value="wepAmmoFusion">Fusion Cell</option>
+                            <option value="wepAmmoPlasma">Plasma Cartridge</option>
+                            <option value="wepAmmoCryo">Cryo Cell</option>
+                            <option value="wepAmmoCore">Fusion Core</option>
+                            <option value="wepAmmoMissile">Missile</option>
+                            <option value="wepAmmoNuke">Mini Nuke</option>
+                            <option value="wepAmmoFlare">Flare</option>
+                            <option value="wepAmmoSyringer">Syringer Ammo</option>
+                            <option value="wepAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-weight" value="0"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="wep-name"></td>
+                    <td>
+                        <select name="wep-skill">
+                            <option value="" disabled selected>Select a Weapon Skill</option>
+                            <option value="Big Guns">Big Guns</option>
+                            <option value="Energy Weapons">Energy Weapons</option>
+                            <option value="Melee">Melee</option>
+                            <option value="Small Guns">Small Guns</option>
+                            <option value="Throwing">Throwing</option>
+                            <option value="Unarmed">Unarmed</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-target-number" value="0" min="0" max="10"></td>
+                    <td><input type="checkbox" name="wep-tag"></td>
+                    <td><input type="number" name="wep-damage" value="0" min="0" max="10" step="1"></td>
+                    <td>
+                        <select name="wep-effects" multiple>
+                            <option value="" disabled selected>Select Damage Effects</option>
+                            <option value="wepEffectVicious">Vicious</option>
+                            <option value="wepEffectBurst">Burst</option>
+                            <option value="wepEffectPiercing1">Piercing 1</option>
+                            <option value="wepEffectSpread">Spread</option>
+                            <option value="wepEffectBreaking">Breaking</option>
+                            <option value="wepEffectStun">Stun</option>
+                            <option value="wepEffectRadioactive">Radioactive</option>
+                            <option value="wepEffectPersistent">Persistent</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-types">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="wepPhysical">Physical</option>
+                            <option value="wepEnergy">Energy</option>
+                            <option value="wepRadiation">Radiation</option>
+                            <option value="wepPhysicalEnergy">Physical/Energy</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wepRate" value="0" min="0" max="6" step="1"></td>
+                    <td>
+                        <select name="wep-range">
+                            <option value="" disabled selected>Select Range</option>
+                            <option value="wepRangeClose">Close</option>
+                            <option value="wepRangeMedium">Medium</option>
+                            <option value="wepRangeLong">Long</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-qualities" multiple>
+                            <option value="" disabled selected>Select Weapon Qualities</option>
+                            <option value="wepQualityCloseQuarters">Close Quarters</option>
+                            <option value="wepQualityReliable">Reliable</option>
+                            <option value="wepQualityTwo-Handed">Two-Handed</option>
+                            <option value="wepQualityInaccurate">Inaccurate</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-ammo">
+                            <option value="" disabled selected>Select Ammo Type</option>
+                            <option value="wepAmmoNA">N/A</option>
+                            <option value="wepAmmo38">.38</option>
+                            <option value="wepAmmo10mm">10mm</option>
+                            <option value="wepAmmo45">.45</option>
+                            <option value="wepAmmo556">5.56mm</option>
+                            <option value="wepAmmo308">.308</option>
+                            <option value="wepAmmo44">.44 Magnum</option>
+                            <option value="wepAmmoShell">Shotgun Shell</option>
+                            <option value="wepAmmo2mm">2mm EC</option>
+                            <option value="wepAmmoFlamer">Flamer Fuel</option>
+                            <option value="wepAmmoGamma">Gamma Round</option>
+                            <option value="wepAmmoFusion">Fusion Cell</option>
+                            <option value="wepAmmoPlasma">Plasma Cartridge</option>
+                            <option value="wepAmmoCryo">Cryo Cell</option>
+                            <option value="wepAmmoCore">Fusion Core</option>
+                            <option value="wepAmmoMissile">Missile</option>
+                            <option value="wepAmmoNuke">Mini Nuke</option>
+                            <option value="wepAmmoFlare">Flare</option>
+                            <option value="wepAmmoSyringer">Syringer Ammo</option>
+                            <option value="wepAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-weight" value="0"></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="wep-name"></td>
+                    <td>
+                        <select name="wep-skill">
+                            <option value="" disabled selected>Select a Weapon Skill</option>
+                            <option value="Big Guns">Big Guns</option>
+                            <option value="Energy Weapons">Energy Weapons</option>
+                            <option value="Melee">Melee</option>
+                            <option value="Small Guns">Small Guns</option>
+                            <option value="Throwing">Throwing</option>
+                            <option value="Unarmed">Unarmed</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-target-number" value="0" min="0" max="10"></td>
+                    <td><input type="checkbox" name="wep-tag"></td>
+                    <td><input type="number" name="wep-damage" value="0" min="0" max="10" step="1"></td>
+                    <td>
+                        <select name="wep-effects" multiple>
+                            <option value="" disabled selected>Select Damage Effects</option>
+                            <option value="wepEffectVicious">Vicious</option>
+                            <option value="wepEffectBurst">Burst</option>
+                            <option value="wepEffectPiercing1">Piercing 1</option>
+                            <option value="wepEffectSpread">Spread</option>
+                            <option value="wepEffectBreaking">Breaking</option>
+                            <option value="wepEffectStun">Stun</option>
+                            <option value="wepEffectRadioactive">Radioactive</option>
+                            <option value="wepEffectPersistent">Persistent</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-types">
+                            <option value="" disabled selected>Select a type</option>
+                            <option value="wepPhysical">Physical</option>
+                            <option value="wepEnergy">Energy</option>
+                            <option value="wepRadiation">Radiation</option>
+                            <option value="wepPhysicalEnergy">Physical/Energy</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wepRate" value="0" min="0" max="6" step="1"></td>
+                    <td>
+                        <select name="wep-range">
+                            <option value="" disabled selected>Select Range</option>
+                            <option value="wepRangeClose">Close</option>
+                            <option value="wepRangeMedium">Medium</option>
+                            <option value="wepRangeLong">Long</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-qualities" multiple>
+                            <option value="" disabled selected>Select Weapon Qualities</option>
+                            <option value="wepQualityCloseQuarters">Close Quarters</option>
+                            <option value="wepQualityReliable">Reliable</option>
+                            <option value="wepQualityTwo-Handed">Two-Handed</option>
+                            <option value="wepQualityInaccurate">Inaccurate</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="wep-ammo">
+                            <option value="" disabled selected>Select Ammo Type</option>
+                            <option value="wepAmmoNA">N/A</option>
+                            <option value="wepAmmo38">.38</option>
+                            <option value="wepAmmo10mm">10mm</option>
+                            <option value="wepAmmo45">.45</option>
+                            <option value="wepAmmo556">5.56mm</option>
+                            <option value="wepAmmo308">.308</option>
+                            <option value="wepAmmo44">.44 Magnum</option>
+                            <option value="wepAmmoShell">Shotgun Shell</option>
+                            <option value="wepAmmo2mm">2mm EC</option>
+                            <option value="wepAmmoFlamer">Flamer Fuel</option>
+                            <option value="wepAmmoGamma">Gamma Round</option>
+                            <option value="wepAmmoFusion">Fusion Cell</option>
+                            <option value="wepAmmoPlasma">Plasma Cartridge</option>
+                            <option value="wepAmmoCryo">Cryo Cell</option>
+                            <option value="wepAmmoCore">Fusion Core</option>
+                            <option value="wepAmmoMissile">Missile</option>
+                            <option value="wepAmmoNuke">Mini Nuke</option>
+                            <option value="wepAmmoFlare">Flare</option>
+                            <option value="wepAmmoSyringer">Syringer Ammo</option>
+                            <option value="wepAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="wep-weight" value="0"></td>
+                </tr>
+
+
+            </tbody>
+        </table>
+        <table class="ammo-table">
+            <thead>
+                <tr>
+                    <th>Ammo</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="gearAmmo">
+                            <option value="" disabled selected>Select Ammo</option>
+                            <option value="gearAmmo38">.38</option>
+                            <option value="gearAmmo10mm">10mm</option>
+                            <option value="gearAmmo45">.45</option>
+                            <option value="gearAmmo556">5.56mm</option>
+                            <option value="gearAmmo308">.308</option>
+                            <option value="gearAmmo44">.44 Magnum</option>
+                            <option value="gearAmmoShell">Shotgun Shell</option>
+                            <option value="gearAmmo2mm">2mm EC</option>
+                            <option value="gearAmmoFlamer">Flamer Fuel</option>
+                            <option value="gearAmmoGamma">Gamma Round</option>
+                            <option value="gearAmmoFusion">Fusion Cell</option>
+                            <option value="gearAmmoPlasma">Plasma Cartridge</option>
+                            <option value="gearAmmoCryo">Cryo Cell</option>
+                            <option value="gearAmmoCore">Fusion Core</option>
+                            <option value="gearAmmoMissile">Missile</option>
+                            <option value="gearAmmoNuke">Mini Nuke</option>
+                            <option value="gearAmmoFlare">Flare</option>
+                            <option value="gearAmmoSyringer">Syringer Ammo</option>
+                            <option value="gearAmmoSpike">Railway Spike</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ammo-quantity" value="0" min="0" max="100000"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="gearAndPerks">
+        <div class="gear-section">
+            <table class="gear-table">
+                <thead>
+                    <tr>
+                        <th>Gear</th>
+                        <th>Amount</th>
+                        <th>Weight (lbs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="gear-item" placeholder="Enter Gear Item"></td>
+                        <td><input type="number" name="gear-amount" value="0" min="0"></td>
+                        <td><input type="number" name="gear-weight" value="0" min="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="carry-weight">
+                <label for="current-carry-weight">Current Carry Weight:</label>
+                <input type="number" id="current-carry-weight" value="0" min="0">
+                <label for="max-carry-weight">Maximum Carry Weight:</label>
+                <input type="number" id="max-carry-weight" value="190" min="0">
+            </div>
+
+        </div>
+
+        <div class="perk-section">
+            <table class="perks-table">
+                <thead>
+                    <tr>
+                        <th class="perk-name-th">Perks and Traits</th>
+                        <th class="perk-rank-th">Rank</th>
+                        <th class="perk-effect-th">Effect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td class="perk-name-td"><input type="text" name="perk-name" placeholder="Enter Perk Name"></td>
+                        <td class="perk-rank-td"><input type="number" name="perk-rank" value="1" min="1" max="10"></td>
+                        <td class="perk-effect-td"><textarea name="perk-effect" placeholder="Enter Perk Effect"></textarea></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="characterSheet.js"></script>
+    <script src="CMDiceRoller.js"></script>
+</body>
+
+</html>
