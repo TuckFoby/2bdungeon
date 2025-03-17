@@ -1,0 +1,35 @@
+#perk-section {
+    margin: 20px;
+}
+
+#perk-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#perk-section th, 
+#perk-section td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#perk-section th {
+    background-color: #f4f4f4;
+}
+
+#perk-section th.short {
+    width: 5%;
+}
+
+#perk-section th.long {
+    width: 70%;
+}
+
+#perk-section tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#perk-section tbody tr:hover {
+    background-color: #f1f1f1;
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/dndDice.css">
+    <title>Dice Roller</title>
+</head>
+<body>
+
+    <h1>Hello, <%- name %></h1>
+    <header>
+        <form class="logo" action="/" method="GET">
+            <button type="submit">Logo</button>
+        </form>
+        <nav class="navigation">
+            <form id="index-button" action="/" method="GET">
+                <button type="submit">Home</button>
+            </form>
+            <form id="falloutCM-button" action="/falloutCM" method="GET">
+                <button type="submit">Fallout Character Manager</button>
+            </form>
+            <form id="logout-button" action="/logout" method="POST">
+                <button type="submit">Log Out</button>
+            </form>
+        </nav>
+    </header>
+    <div class="input-containers">
+        <div class="special-container">
+            <div class="character-name-container">
+                <label class="character-name-label" for="character-name">Character Name</label>
+                <span id="character-name">Enter Character's Name</span>
+                <label id="APLabel">AP</label><span id="APTotal">0</span>
+            </div>
+            <h2>SPECIAL</h2>
+            <label>Strength</label><span id="Strength">5</span>
+            <label>Perception</label><span id="Perception">5</span>
+            <label>Endurance</label><span id="Endurance">5</span>
+            <label>Charisma</label><span id="Charisma">5</span>
+            <label>Intelligence</label><span id="Intelligence">5</span>
+            <label>Agility</label><span id="Agility">5</span>
+            <label>Luck</label><span id="Luck">5</span>
+            <div class="savedStats-container">
+                <button id="saveStats" type="button">Save Stats to User Profile</button>
+                <button id="loadStats" type="button">Load Stats from User Profile</button>
+            </div>
+        </div>
+        <div class="skills-container">
+            <h3>Skills</h3>
+            <label>Athletics</label><span id="Athletics">0</span>
+            <label>Barter</label><span id="Barter">0</span>
+            <label>Big Guns</label><span id="Big Guns">0</span>
+            <label>Energy Weapons</label><span id="Energy Weapons">0</span>
+            <label>Explosives</label><span id="Explosives">0</span>
+            <label>Lockpick</label><span id="Lockpick">0</span>
+            <label>Medicine</label><span id="Medicine">0</span>
+            <label>Melee Weapons</label><span id="Melee Weapons">0</span>
+            <label>Pilot</label><span id="Pilot">0</span>
+            <label>Repair</label><span id="Repair">0</span>
+            <label>Science</label><span id="Science">0</span>
+            <label>Small Guns</label><span id="Small Guns">0</span>
+            <label>Sneak</label><span id="Sneak">0</span>
+            <label>Speech</label><span id="Speech">0</span>
+            <label>Survival</label><span id="Survival">0</span>
+            <label>Throwing</label><span id="Throwing">0</span>
+            <label>Unarmed</label><span id="Unarmed">0</span>
+        </div>
+        <!--
+        <div class="dice-container">
+            <h5>Num. of Dice to Roll</h5>
+            <label>d20</label><span>0</span>
+            <label>d12</label><span>0</span>
+            <label>d10</label><span>0</span>
+            <label>d8</label><span>0</span>
+            <label>d6</label><span>0</span>
+            <label>d4</label><span>0</span>
+        </div>
+        -->
+        <div class="skill-rolls">
+            <h4>Rolls</h4>
+            <label>Athletics</label><input type="button" id="Athletics-button" value="Roll">
+            <label>Barter</label><input type="button" id="Barter-button" value="Roll">
+            <label>Big Guns</label><input type="button" id="Big Guns-button" value="Roll">
+            <label>Energy Weapons</label><input type="button" id="Energy Weapons-button" value="Roll">
+            <label>Explosives</label><input type="button" id="Explosives-button" value="Roll">
+            <label>Lockpick</label><input type="button" id="Lockpick-button" value="Roll">
+            <label>Medicine</label><input type="button" id="Medicine-button" value="Roll">
+            <label>Melee Weapons</label><input type="button" id="Melee Weapons-button" value="Roll">
+            <label>Pilot</label><input type="button" id="Pilot-button" value="Roll">
+            <label>Repair</label><input type="button" id="Repair-button" value="Roll">
+            <label>Science</label><input type="button" id="Science-button" value="Roll">
+            <label>Small Guns</label><input type="button" id="Small Guns-button" value="Roll">
+            <label>Sneak</label><input type="button" id="Sneak-button" value="Roll">
+            <label>Speech</label><input type="button" id="Speech-button" value="Roll">
+            <label>Survival</label><input type="button" id="Survival-button" value="Roll">
+            <label>Throwing</label><input type="button" id="Throwing-button" value="Roll">
+            <label>Unarmed</label><input type="button" id="Unarmed-button" value="Roll">
+        </div>
+        <div class="AP">
+            <h5>Add AP</h5>
+            <label>Num. of Bonus Die</label><input type="number" id="AP" value="0">
+        </div>
+        <div id="output-div"></div>
+    </div>
+    <script src="falloutDiceRoller.js"></script>
+</body>
+</html>
