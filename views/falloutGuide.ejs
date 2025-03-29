@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/dndGuide.css">
+    <title>Info</title>
+</head>
+<body>
+    <h1>Hello, <%= name %>!</h1>
+    <header>
+        <form class="logo" action="/" method="GET">
+            <button type="submit">
+                <img src="images\tobyco-logo-4.png" alt="Logo" style="width: 250px; height: 250px;">
+            </button>
+        </form>
+        <nav class="navigation">
+            <form id="index-button" action="/" method="GET">
+                <button type="submit">Home</button>
+            </form>
+            <form id="falloutCM-button" action="/falloutCM" method="GET">
+                <button type="submit">Fallout Character Manager</button>
+            </form>
+            <form id="logout-button" action="/logout" method="POST">
+                <button type="submit">Log Out</button>
+            </form>
+        </nav>
+    </header>
+    <h2>Purpose of This Website</h2>
+    
+    <section class="guide-section">
+        <h3>Fallout TTRP</h3>
+        <p>This website is used to store user-specific data for players of "Fallout The Roleplaying Game", a tabletop RPG game. The website is meant to be used by a <strong>single group</strong> of players at a time due to limitations of the Chat Box 
+            (this is further expounded later).</p>
+        <img src="images\fallout_ttrpg.png" alt="A Fallout TTRP Rule Book Example" class="guide-img">
+        <p>Fallout TTRPG requires players to keep track of a lot of character information (their skills, equipped gear, inventory, current health, etc.).
+            The purpose of this website is to provide streamlined rolling, inventory, gear, and health management for players. Instead of a player manually tracking their skills and attributes in order to determine their rolls 
+            (which are necessary to determine if they succeed in a given task, such as lockpicking or shooting), they can fill out their character information into this website and then use the "Roll" button every time they need to determine successes.</p>
+    </section>
+    
+    <section class="guide-section">
+        <h3>Filling Out Character Info</h3>
+        <p>Navigate to the Character Manager in the navigation bar. Then, begin filling in your character's information for every field.</p>
+        <img src="images\cm-example.png" alt="Character Form Example" class="guide-img">
+    </section>
+    
+    <section class="guide-section">
+        <h3>Saving & Loading Stats</h3>
+        <p>After filling in your details, click the <strong>Save</strong> button located on the bottom left of the central Character limb segment. Use the <strong>Load</strong> button to retrieve them later.</p>
+        <img src="images\save-load-example.png" alt="Save Load Example" class="guide-img">
+    </section>
+    
+    <section class="guide-section">
+        <h3>Rolling Dice</h3>
+        <p>Each skill has a "Roll" button. Clicking it simulates a number of 1d20 rolls equal to <strong>2</strong> plus <strong>the amount of AP expended</strong> (each point of AP gives you an additional 1d20). The output of these rolls will end up in the Chat Box.</p>
+        <img src="images/rolls-example.png" alt="Rolling Example" class="guide-img">
+    </section>
+    
+    <section class="guide-section">
+        <h3>Chat Box</h3>
+        <p>The Chat Box is where the output of your rolls is displayed. It can also be used to chat with other players. The contents of the chat are held by session, so logging out or otherwise resetting the session will reset the chat. 
+            The chat is also open to all connected players, so only one game can reasonably be ran at a time per server.</p>
+        <img src="images/chat-box-example.png" alt="Rolling Example" class="guide-img">
+    </section>
+</body>
+</html>

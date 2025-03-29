@@ -9,8 +9,16 @@
 <%= messages.error %>
 <%} %>
 <form action="/login" method="POST">
+    <% if (messages.length > 0) { %>
+        <div class="messages">
+            <ul>
+                <% errors.forEach(function(messages) { %>
+                    <li><%= messages.path %>: <%= messages.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %> 
     <div>
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" required>
     </div>
@@ -19,5 +27,6 @@
         <input type="password" id="password" name="password" required>
     </div>
     <button type="submit">Login</button>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 </form>
 <a href="/register">Register</a>

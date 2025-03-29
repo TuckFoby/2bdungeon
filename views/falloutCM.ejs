@@ -9,20 +9,20 @@
 </head>
 
 <body>
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <input type="hidden" id="username" value="<%- name %>">
+    <input type="hidden" id="username" value="<%= name %>">
+    <h1>Hello, <%= name %>!</h1>
     <header>
         <form class="logo" action="/" method="GET">
             <button type="submit">
-                <img src="images/tobyco-logo.png" alt="Logo" style="width: 200px; height: 200px;">
+                <img src="images\tobyco-logo-4.png" alt="Logo" style="width: 250px; height: 250px;">
             </button>
         </form>
         <nav class="navigation">
             <form id="index-button" action="/" method="GET">
                 <button type="submit">Home</button>
             </form>
-            <form id="falloutCM-button" action="/falloutCM" method="GET">
-                <button type="submit">Fallout Character Manager</button>
+            <form id="falloutGuide-button" action="/falloutGuide" method="GET">
+                <button type="submit">Website Guide</button>
             </form>
             <form id="logout-button" action="/logout" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -71,7 +71,7 @@
     <div class="chatbox-container">
         <div class="chatbox">
           <div class="chatbox-messages" id="chatbox-messages">
-            <!-- Messages will appear here -->
+            <!-- chat messages end up here -->
           </div>
           <div class="chatbox-input">
             <input type="text" id="chat-input" placeholder="Type a message...">
@@ -80,11 +80,8 @@
         </div>
     </div>
 
-    <div id="output-div"></div>
-
     <div class="content">
         <table class="skills-table">
-            <!-- Header row with column labels -->
             <thead>
                 <tr>
                     <th>Skill</th>
@@ -180,16 +177,9 @@
                 </tr>
             </tbody>
         </table>
-        <!-- Buttons Area -->
-        <div id="save-container" style="margin-left: 20px; align-self: flex-start;">
-            <button id="save-button">Save</button>
-        </div>
-        <div id="load-container" style="margin-left: 20px; align-self: flex-start;">
-            <button id="load-button">Load</button>
-        </div>
 
         <div class="combat-stats">
-            <!-- Header Area for Melee Damage, Defense, Initiative -->
+            <!-- melee damage, defense, initiative headers -->
             <div class="body-header">
                 <div>
                     <label for="melee-damage">Melee Damage</label><br>
@@ -212,7 +202,7 @@
                     <input type="number" id="ap-total" value="0" min="0" max="6">
                 </div>
             </div>
-            <!-- Body Grid Layout for Limbs -->
+            <!-- body grid and limbs -->
             <div class="body-grid">
 
                 <div class="limb-section">
@@ -295,13 +285,6 @@
                     </div>
                 </div>
 
-                <!-- Placeholder for the character's image
-                <div class="center-image">
-                    <img src="images/vault-boy.png" alt="Character Image">
-                </div>
-
-                Placeholder for the character's image -->
-
                 <div class="center-image">
                     <img src="images/vault-boy.png" alt="Character Image">
                 </div>
@@ -327,6 +310,10 @@
                 </div>
 
                 <div class="limb-section">
+                    <div id="save-container">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button id="save-button">Save</button>
+                    </div>
                 </div>
 
                 <div class="limb-section">
@@ -348,13 +335,16 @@
                         <input type="number" id="torso-hp" value="0">
                     </div>
                 </div>
-                <div class="limb-section"></div>
+                <div class="limb-section">
+                    <div id="load-container">
+                        <button id="load-button">Load</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="dice">
             <table class="dice-table">
-                <!-- Header row with column labels -->
                 <thead>
                     <tr>
                         <th class="dice-table-skill-th">Skill</th>
@@ -458,7 +448,6 @@
 
     <div class="weaponsAndAmmo">
         <table class="weapons-table">
-            <!-- Header row with column labels -->
             <thead>
                 <tr>
                     <th>Name</th>
@@ -1278,7 +1267,6 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="characterSheet.js"></script>
-    <script src="CMDiceRoller.js"></script>
 </body>
 
 </html>

@@ -19,7 +19,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: url('images/background.png') no-repeat;
+    background: url('images/index-background.jpg') no-repeat;
     background-size:cover;
 }
 
@@ -36,38 +36,35 @@ header{
 }
 
 .logo{
-    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+  
+.logo button{
+    position:relative;
     font-size:2em;
     color:#fff;
-    text-decoration: none;
-    font-weight: 500;
-    margin-left: 40px;
-    background: transparent;
-    border: none;
-    outline: none;
-    user-select: none;
-    cursor: pointer;
-}
-
-.navigation a{
-    position:relative;
-    font-size:1.1em;
-    color:#fff;
+    user-select:none;
     text-decoration:none;
     font-weight: 500;
     margin-left:40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
 }
-
+  
 .navigation {
     display: flex;
     align-items: center;
-    gap: 20px; /* Optional: Adjust the space between items */
+    gap: 20px;
 }
-
+  
 .navigation form{
     margin:0;
 }
-
+  
 .navigation button{
     position:relative;
     font-size:1.1em;
@@ -79,4 +76,4 @@ header{
     border: none;
     outline: none;
     cursor: pointer;
-}
+  }

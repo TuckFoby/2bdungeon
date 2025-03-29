@@ -8,15 +8,19 @@
 </head>
 <body>
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <h1>Hello, <%- name %></h1>
+    <h1>Welcome, <%- name %></h1>
     <header>
-        <h2 class="logo">Logo</h2>
+        <form class="logo" action="/" method="GET">
+            <button type="submit">
+                <img src="images/tobyco-logo-4.png" alt="Logo" style="width: 200px; height: 200px;">
+            </button>
+        </form>
         <nav class="navigation">
-            <form id="falloutDice-button" action="/falloutDice" method="GET">
-                <button type="submit">Fallout Dice Roller</button>
-            </form>
             <form id="falloutCM-button" action="/falloutCM" method="GET">
                 <button type="submit">Fallout Character Manager</button>
+            </form>
+            <form id="falloutGuide-button" action="/falloutGuide" method="GET">
+                <button type="submit">Website Guide</button>
             </form>
             <form id="logout-button" action="/logout" method="POST">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">

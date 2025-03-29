@@ -1,3 +1,56 @@
+///Chat Box////
+const socket = io(); // Connect to the server
+const chatboxMessages = document.getElementById('chatbox-messages');
+const inputField = document.getElementById('chat-input');
+const sendButton = document.getElementById('send-button');
+
+// Username fetched from server (via template rendering)
+const username = document.getElementById('username').value;
+
+// Send message to the server
+sendButton.addEventListener('click', sendMessage);
+inputField.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const message = inputField.value.trim();
+    if (message) {
+        socket.emit('chat message', { username, message }); // Emit the message and username to the server
+        inputField.value = ''; // Clear the input field
+    }
+}
+
+// Receive messages from the server
+// socket.on('chat message', ({ username, message }) => {
+//     const messageElement = document.createElement('div');
+//     messageElement.textContent = `${username}: ${message}`;
+//     chatboxMessages.appendChild(messageElement);
+
+//     // Scroll to the bottom
+//     chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+// });
+socket.on('chat history', (history) => {
+    const messagesContainer = document.getElementById('chatbox-messages');
+    history.forEach(({ username, message, timestamp }) => {
+        const msgEl = document.createElement('div');
+        msgEl.textContent = `[${new Date(timestamp).toLocaleTimeString()}] ${username}: ${message}`;
+        messagesContainer.appendChild(msgEl);
+    });
+});
+
+socket.on('chat message', ({ username, message, timestamp }) => {
+    const messagesContainer = document.getElementById('chatbox-messages');
+    const msgEl = document.createElement('div');
+    msgEl.textContent = `[${new Date(timestamp).toLocaleTimeString()}] ${username}: ${message}`;
+    messagesContainer.appendChild(msgEl);
+
+    // Optional: Auto-scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+});
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -152,23 +205,29 @@ async function saveToMongo() {
     // Log the array to verify the results
     //console.log(ammoData);
 
-
     try {
         const response = await fetch('/saveStats', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'x-csrf-token': document.querySelector('input[name="_csrf"]').value
             },
             body: JSON.stringify({ stats }),
+            credentials: 'same-origin'
         });
-
+    
         if (response.ok) {
+            const result = await response.json(); // optional
+            console.log("Stats saved:", result);
             alert('Stats saved successfully.');
         } else {
-            alert('Error saving stats; Response JSON not normal');
+            const error = await response.json();
+            console.error("Server error response:", error);
+            alert('Error saving stats; server rejected the request.');
         }
     } catch (error) {
-        alert('Error saving stats; could not fetch "/saveStats"');
+        console.error("Fetch failed:", error);
+        alert('Error saving stats; could not reach "/saveStats"');
     }
 }
 
@@ -220,6 +279,8 @@ function collectWeapons(stats) {
         }
     });
 }
+
+
 
 function collectAmmo(stats) {
     const rows = document.querySelectorAll('.ammo-table tbody tr'); // Select all rows in the table
@@ -465,7 +526,7 @@ function loadGear(stats) {
 
         if (gearData) {
             row.querySelector('input[name="gear-item"]').value = gearData.gear || '';
-            row.querySelector('input[name="gear-amount"]').value = gearData.amount || '';
+            row.querySelector('input[name="gear-amount"]').value = gearData.amount || 0;
             row.querySelector('input[name="gear-weight"]').value = gearData.weight || 0;
         } else {
             // Clear the row if no gear data is available
@@ -515,8 +576,119 @@ function loadPerks(stats) {
     });
 }
 
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
+function rollForSkill(attributeValue, skillValue, APValue, skillID) {
+    reSave = false;
 
+    const chatboxMessages = document.getElementById('chatbox-messages');
+
+    function appendMessage(target, diceRolls, successes) {
+        const rollsOutput = diceRolls.map((roll, index) => `Dice ${index + 1} = ${roll}`).join(', ');
+        const message = `
+            <p>${username}: Target: ${target}. Roll Results: ${rollsOutput}. Number of Successes: ${successes}</p>
+        `;
+
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chatbox-message');
+        messageElement.innerHTML = message;
+        chatboxMessages.appendChild(messageElement);
+
+        // Scroll to the bottom of the chatbox
+        chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+    }
+
+    const rolls = [];
+    let successes = 0;
+    const target = attributeValue + skillValue;
+
+    if (APValue === 0) {
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20));
+    } else if (APValue === 1) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 1;
+    } else if (APValue === 2) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 2;
+    } else if (APValue === 3) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 3;
+    } else if (APValue === 4) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 4;
+    } else if (APValue === 5) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 5;
+    } else if (APValue === 6) {
+        reSave = true;
+        rolls.push(getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20), getRandomInt(1, 20));
+        document.getElementById(`${skillID}-ap`).value = 0;
+        document.getElementById('ap-total').value -= 6;
+    }
+
+    // Calculate successes
+    rolls.forEach((roll) => {
+        if (roll === 1) successes += 2;
+        else if (roll <= target) successes++;
+    });
+
+    // Append message to the chatbox
+    appendMessage(target, rolls, successes);
+
+    if (reSave) {
+        saveToMongo();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const skills = [
+        { id: 'Athletics', attribute: 'Strength' },
+        { id: 'Barter', attribute: 'Charisma' },
+        { id: 'Big-Guns', attribute: 'Endurance' },
+        { id: 'Energy-Weapons', attribute: 'Perception' },
+        { id: 'Explosives', attribute: 'Perception' },
+        { id: 'Lockpick', attribute: 'Perception' },
+        { id: 'Medicine', attribute: 'Intelligence' },
+        { id: 'Melee-Weapons', attribute: 'Strength' },
+        { id: 'Pilot', attribute: 'Perception' },
+        { id: 'Repair', attribute: 'Intelligence' },
+        { id: 'Science', attribute: 'Intelligence' },
+        { id: 'Small-Guns', attribute: 'Agility' },
+        { id: 'Sneak', attribute: 'Agility' },
+        { id: 'Speech', attribute: 'Charisma' },
+        { id: 'Survival', attribute: 'Endurance' },
+        { id: 'Throwing', attribute: 'Agility' },
+        { id: 'Unarmed', attribute: 'Strength' }
+    ];
+
+    skills.forEach(({ id, attribute }) => {
+        const button = document.getElementById(`${id}-roll-button`);
+        if (button) {
+            button.addEventListener('click', (e) => {
+                console.log(`${id}-ap`);
+                const skill = parseInt(document.getElementById(id).value || 0);
+                const attri = parseInt(document.getElementById(attribute).value || 0);
+                const AP = parseInt(document.getElementById(`${id}-ap`).value || 0);
+
+                rollForSkill(attri, skill, AP, id);
+            });
+        } else {
+            console.warn(`Button with ID '${id}-roll-button' not found.`);
+        }
+    });
+});
 
 async function loadFromMongo() {
 

@@ -4,8 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const path = require('path')
 const express = require('express');
-const http = require('http'); // Required for creating the server
-const { Server } = require('socket.io'); // Import Socket.IO
+const http = require('http');
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
 const session = require('express-session');
@@ -20,7 +19,7 @@ const csurf = require('csurf')
 const passport = require('passport');
 const nodemailer = require('nodemailer');
 
-// Database Connection
+// database Connection
 mongoose.connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -30,16 +29,16 @@ mongoose.connect(process.env.DATABASE_URL, {
     console.error('Failed to connect to MongoDB', err);
 });
 
-// Nodemailer transporter for sending emails
+// nodemailer transporter for sending emails
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // Your Gmail
-        pass: process.env.EMAIL_PASS  // Your Gmail App Password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
-// Function to send verification email
+// function for email verification
 const sendVerificationEmail = async (userEmail, userID) => {
     const verificationLink = `http://localhost:30000/verify-email?token=${userID}`;
     
@@ -60,8 +59,24 @@ const sendVerificationEmail = async (userEmail, userID) => {
 };
 
 const app = express();
-const server = http.createServer(app); // Create HTTP server for Socket.IO
-const io = require('socket.io')(server); // Pass your Express server to Socket.IO
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server, {
+    cors: {
+        origin: "*", // allow all origins
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log(`🟢 New connection: ${socket.id}`);
+    socket.on('disconnect', () => {
+        console.log(`🔴 User disconnected: ${socket.id}`);
+    });
+});
+
+
+
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
@@ -69,44 +84,45 @@ db.once('open', () => {
     console.log('Connected to MongoDB');
 });
 
+// more middleware
 const initializePassport = require('./passport-config');
 initializePassport(
     passport,
     async email => await User.findOne({ email: email }),
     async userID => await User.findOne({ userID: userID }),
 );
-app.use(express.urlencoded({ extended: false }));
 app.use(flash());
-app.use(session({
+
+const session_middleware = session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {secure: false}
-}));
+    cookie: { secure: false }
+});
+
+app.use(session_middleware)
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
-app.use(express.static('public'));
-app.use(express.json()); // For parsing JSON for POST requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Log internally; stop giving specific errors to users via console
+    console.error(err.stack); // log internally
     res.status(500).json({ message: 'Something went wrong.' });
 });
-app.use(express.static(path.join(__dirname, 'public'), { // Limit info on directory
+app.use(express.static(path.join(__dirname, 'public'), { // limit info on directory
     dotfiles: 'deny',
     extensions: ['html', 'css', 'js']
 }));
-// Middleware
-app.set('view-engine', 'ejs');
+app.set('view engine', 'ejs');
 app.use(csurf())
 app.use((req, res, next)=>{
     res.locals.csrfToken = req.csrfToken();
     next();
 })
 
-
-
-// Authentication Middleware
+// authentication Middleware
 function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -121,7 +137,14 @@ function checkNotAuthenticated(req, res, next) {
     next();
 }
 
-// Routes
+// enforce rate limit for login attempts
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login attempts
+    message: 'Too many login attempts, please try again later.',
+});
+
+// routes
 app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', { name: req.user.name });
 });
@@ -130,24 +153,10 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs');
 });
 
-// enforce rate limit for login attempts
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 login attempts
-    message: 'Too many login attempts, please try again later.',
-});
-
-app.post('/login', checkNotAuthenticated, loginLimiter, passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true,
-}));
-
 app.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('register.ejs', 
         { 
             errors: [],
-            csrfToken: req.csrfToken(), 
             name: '', 
             email: '' 
         });
@@ -157,7 +166,7 @@ app.get('/register', checkNotAuthenticated, (req, res) => {
 // enforce rate limit for register attempts
 const registerLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 login attempts
+    max: 5, // limit each IP to 5 registration attempts
     message: 'Too many registration attempts, please try again later.',
 });
 
@@ -168,16 +177,15 @@ app.post('/register', checkNotAuthenticated, registerLimiter, [
 ], async (req, res) => {
     const errors = validationResult(req);
 
-    // If validation errors exist, return them in the required format
+    // if validation errors exist, return them
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array().map(error => ({
-            type: "field",
-            value: req.body[error.path], // Extracting value from request body
-            msg: error.msg,
-            path: error.path,
-            location: error.location
-        })) });
+        return res.status(400).render('register.ejs', {
+            errors: errors.array(),
+            name: req.body.name,
+            email: req.body.email
+        });
     }
+    
 
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -188,22 +196,34 @@ app.post('/register', checkNotAuthenticated, registerLimiter, [
             name: req.body.name,
             email: req.body.email,
             password: hashedPassword,
-            verified: false // Set default as false until verified
+            verified: true // no email verification for now; set to false later
         });
 
         await user.save();
 
-        // Send verification email
-        await sendVerificationEmail(req.body.email, userID);
+        res.status(200).render('login.ejs',
+            { message: ["Registration successful!"],
+              csrfToken: req.csrfToken()
 
-        res.status(200).json({ message: "Registration successful! Please verify your email." });
+
+            });
     } catch (e) {
+        if (e.code === 11000 && e.keyPattern && e.keyPattern.email){
+            // error code for duplicate email
+            return res.status(400).render('register.ejs',{
+                errors: [{ path: 'email', msg: 'Email is already registered' }],
+                csrfToken: req.csrfToken(),
+                name: req.body.name,
+                email: req.body.email
+            })
+        }
         console.log(e);
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
 app.post('/logout', (req, res, next) => {
+    req.csrfToken = () => ''; // no-op
     next(); // skipping csrf middleware
 }, (req, res) => {
     req.logout((err) => {
@@ -223,10 +243,6 @@ app.post('/login', checkNotAuthenticated, loginLimiter, async (req, res, next) =
         return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    if (!user.verified) {
-        return res.status(403).json({ message: "Please verify your email before logging in." });
-    }
-
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/login',
@@ -234,16 +250,23 @@ app.post('/login', checkNotAuthenticated, loginLimiter, async (req, res, next) =
     })(req, res, next);
 });
 
-// Fallout Dice and Character Sheet Routes
-app.get('/falloutDice', checkAuthenticated, (req, res) => {
-    res.render('falloutDice.ejs', { name: req.user.name });
+app.get('/falloutCM', checkAuthenticated, (req, res) => {
+    res.render('falloutCM.ejs', { 
+        name: req.user.name,
+        csrfToken: req.csrfToken()
+    });
 });
 
-app.get('/falloutCM', checkAuthenticated, (req, res) => {
-    res.render('falloutCM.ejs', { name: req.user.name });
+app.get('/falloutGuide', checkAuthenticated, (req, res) =>{
+    res.render('falloutGuide.ejs', {
+        name: req.user.name,
+        csrfToken: req.csrfToken()
+    });
 });
+
 
 app.post('/saveStats', checkAuthenticated, async (req, res) => {
+    console.log(req.headers['_csrf'])
     const stats = req.body.stats;
     const userID = req.user.userID;
     if (!userID) {
@@ -255,7 +278,7 @@ app.post('/saveStats', checkAuthenticated, async (req, res) => {
             { name: req.user.name, stats: stats },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
-        res.status(200).send('Stats saved successfully.');
+        res.status(200).json({ message: 'Stats saved successfully.' });
     } catch (error) {
         res.status(500).json({ message: 'Error saving stats', error: error.toString() });
         console.log(error);
@@ -278,7 +301,7 @@ app.get('/getStats', checkAuthenticated, async (req, res) => {
 
 // Verification route
 app.get('/verify-email', async (req, res) => {
-    const { token } = req.query; // Extract token from URL
+    const { token } = req.query; // extract token from URL
 
     if (!token) {
         return res.status(400).send('Invalid verification link.');
@@ -295,7 +318,7 @@ app.get('/verify-email', async (req, res) => {
             return res.send('Email already verified.');
         }
 
-        user.verified = true; // Mark user as verified
+        user.verified = true; // mark user as verified
         await user.save();
 
         res.send('Email verified successfully! You can now log in.');
@@ -306,34 +329,50 @@ app.get('/verify-email', async (req, res) => {
 });
 
 io.use((socket, next) => {
+    session_middleware(socket.request, {}, next);
+});
+
+io.use((socket, next) => { // auth check
+    console.log("Socket request headers:", socket.request.headers);
+    console.log("Socket request session:", socket.request.session);
     if (!socket.request.session || !socket.request.session.passport) {
+        console.log("Authentication error: No session found");
         return next(new Error('Authentication error'));
     }
     socket.user = socket.request.session.passport.user;
+    console.log(`User authenticated: ${socket.user}`);
     next();
 });
 
-const MAX_MESSAGE_LENGTH = 500; // Set a limit for message length
-const ALLOWED_PATTERN = /^[a-zA-Z0-9 .,!?'"()-]+$/; // Only allow safe characters
+const MAX_MESSAGE_LENGTH = 500;
+const ALLOWED_PATTERN = /^[a-zA-Z0-9 .,!?'"()-]+$/;
 
 io.on('connection', (socket) => {
-    console.log('A user connected.');
+    const req = socket.request;
+
+    // session-based chat history
+    if (!req.session.chatHistory) {
+        req.session.chatHistory = [];
+    }
+
+    // send existing chat history to the client upon connection
+    socket.emit('chat history', req.session.chatHistory);
 
     socket.on('chat message', ({ username, message }) => {
-        // Reject overly long messages
-        if (message.length > MAX_MESSAGE_LENGTH) {
-            console.log('Blocked an excessively long message.');
+        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+            console.log('Blocked message.');
             return;
         }
 
-        // Reject messages with disallowed characters
-        if (!ALLOWED_PATTERN.test(message)) {
-            console.log('Blocked a message with disallowed characters.');
-            return;
-        }
+        const chatEntry = { username, message, timestamp: new Date() };
+        req.session.chatHistory.push(chatEntry);
 
-        // Broadcast the validated message
-        io.emit('chat message', { username, message });
+        // save session changes
+        req.session.save((err) => {
+            if (err) console.error('Session save error:', err);
+        });
+
+        io.emit('chat message', chatEntry);
     });
 
     socket.on('disconnect', () => {
@@ -341,7 +380,28 @@ io.on('connection', (socket) => {
     });
 });
 
-// Start the server
+
+app.use((err, req, res, next) => {
+    if (err.code === 'EBADCSRFTOKEN') {
+        console.warn('Invalid CSRF token');
+
+        // clearing session
+        req.session = null;
+
+        // json error
+        if (req.headers['content-type'] === 'application/json') {
+            return res.status(403).json({ message: 'Invalid CSRF token. Please refresh the page or log in again.' });
+        }
+
+        // or, redirect back to login
+        return res.redirect('/login');
+    }
+
+    // misc. errors
+    next(err);
+});
+
+// starting server
 const PORT = 30000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://0.0.0.0:${PORT}`);

@@ -4,24 +4,16 @@
   box-sizing: border-box;
   font-family:'Poppins',sans-serif;
 }
-/*
-body {
-  font-family: Arial, sans-serif;
-  background: url('images/CMbackground.jpg') no-repeat;
-  background-size:cover;
-}
-*/
 
 body {
   font-family: Arial, sans-serif;
-  background: url('images/CMbackground.jpg') no-repeat;
+  background: url('images/CMBackground2.jpg') no-repeat;
   background-size:cover;
   justify-content: center;
   align-items:center;
 }
 
 header{
-  /*position: fixed;*/
   top: 0;
   left: 0;
   width: 100%;
@@ -86,6 +78,15 @@ header{
   padding-top: 0px;
 }
 
+h1 {
+  text-align: center;
+  position: relative;
+  top:20px;
+  margin: 0;
+  padding: 0;
+  color:#fff;
+}
+
 .character-info, .xp-info, .origin-level {
   display: flex;
   flex-direction: column;
@@ -98,6 +99,14 @@ header{
   border: none;
   width: 150px;
   background-color: #447AB9;
+}
+
+#character-name{
+  width: 250px;
+}
+
+.character-info label{
+  padding-top: 7px;
 }
 
 .special {
@@ -115,16 +124,13 @@ header{
 
 #output-div {
   width: 20%;
-  font-size: 22px; /* Adjust the font size as needed */
-  line-height: 1.5; /* Optional: Adjust the line height for better readability */
-  /*padding: 10px; /* Optional: Add padding for some space inside the div */
+  font-size: 22px;
+  line-height: 1.5;
   margin-left: 40%;
   margin-right: 40%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow for better appearance */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   color:#FFD700;
   justify-content: center;
-  /*border: 1px solid #ccc; /* Optional: Add a border */
-  /*background-color: #f9f9f9; /* Optional: Add a background color */
 }
 
 **************
@@ -138,6 +144,7 @@ header{
 
 .chatbox {
   width: 40%;
+  margin-top: 10px;
   margin-left: 30%;
   margin-right: 30%;
   height: 400px;
@@ -218,17 +225,17 @@ header{
 
 .content {
   display: flex;
-  justify-content: center; /* Centers the child elements horizontally */
-  align-items: center; /* Optional: Centers child elements vertically */
+  justify-content: center;
+  align-items: center;
   padding-top: 1%;
   margin: 0 auto;
-  width: 68%; /* Ensure full-width container */
+  width: 56%;
 }
 
 .skills-section{
-  margin-left: 30px; /* Reduce this to a small value or 0 */
+  margin-left: 0px;
   margin-right: 0;
-  padding-right: 0;   /* Ensure no extra internal spacing */
+  padding-right: 0;
 }
 
 .skills-table th, .skills-table td {
@@ -250,7 +257,7 @@ header{
 }
 
 .dice {
-  display: flex; /* Enable flexbox */
+  display: flex;
   width: 25%;
 }
 
@@ -284,7 +291,7 @@ header{
 }
 
 .dice-table th.dice-table-ap-th, .dice-table td.dice-table-ap{
-  width: 11%;
+  width: 15%;
   color: #FFD700;
   background-color: #325886;
 }
@@ -296,28 +303,31 @@ header{
 }
 
 .dice-table td.dice-table-ap-td input {
-  width: 100%; /* Ensure inputs don't exceed the column width */
-  box-sizing: border-box; /* Account for padding and border */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dice-table td.dice-table-roll-td input{
-  width: 100%; /* Ensure inputs don't exceed the column width */
-  box-sizing: border-box; /* Account for padding and border */
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.perk-section th.perk-name-th {                                                  /*  THIS IS ACTUALLY SETTING WIDTH FOR TABLE HEADER AND BODY     */
+.perk-section th.perk-name-th {
   width: 20%;
   color: #FFD700;
   background-color: #325886;
 }
 
+
+
+
 .combat {
   flex: 3;
-  padding: 10px; /* Keep the padding small for internal spacing */
+  padding: 10px;
   border: 2px solid #000;
-  margin: 0 auto; /* Centers the element horizontally */
-  max-width: 800px; /* Optional: Restrict the maximum width */
-  width: 100%; /* Ensures it takes full width until the max-width limit */
+  margin: 0 auto;
+  max-width: 800px;
+  width: 100%;
 }
 
 
@@ -326,31 +336,28 @@ header{
 .combat-stats{
   background-color: #325886;
   color: rgba(255, 204, 0, 1);
-  
-  /*max-width: 800px; /* Set a max width */
   margin-left: 0;
   margin-right:0;
   padding-left: 0;
   padding-right: 0;
   gap: 0;
-
-  margin: 0 auto; /* Center horizontally */
+  margin: 0 auto;
   padding: 10px;
   background-color: rgb(68, 122, 185, 0.5);
   border: 2px solid #ccc;
 }
 /* General layout */
 .body-header, .body-grid {
-  width: 100%; /* Ensure both take full width */
-  margin-bottom: 20px; /* Add space between elements */
+  width: 100%;
+  margin-bottom: 20px;
 }
       
 /* Header for Melee Damage, Defense, Initiative */
 .body-header {
-  display: flex; /* Arrange children side by side */
-  justify-content: space-between; /* Space out the items */
-  gap: 20px; /* Add spacing between the items */
-  grid-column: 1 / span 3; /* Keep this if you need the header to span multiple columns */
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  grid-column: 1 / span 3;
   text-align: center;
   background-color: rgb(68, 122, 1850, 0.01);
 }
@@ -364,8 +371,8 @@ header{
   text-align: center;
   padding: 10px;
   border: 2px solid #000;
-  width: 50px; /* Adjust width as necessary */
-  flex: 1; /* This will make each div take up equal width */
+  width: 50px;
+  flex: 1;
 }
 
 .body-header input{
@@ -375,7 +382,7 @@ header{
 .body-grid {
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Adjust as needed */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -423,10 +430,45 @@ header{
 }
 
 .center-image {
-  grid-column: 2; /* Center image in the middle column */
+  grid-column: 2;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#save-container {
+  background-color: #325886;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+}
+
+#save-container button{
+  align-self: center;
+  height: 40px;
+  background-color: #000;
+  border-color: #FFD700;
+  color: #FFD700;
+  font-weight: bold;
+}
+
+#load-container {
+  background-color: #325886;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#load-container button{
+  align-self: center;
+  height: 40px;
+  background-color: #000;
+  border-color: #FFD700;
+  color: #FFD700;
+  font-weight: bold;
 }
 
 .weapons-table th, .weapons-table td{
@@ -443,7 +485,6 @@ header{
   color:#fff
 }
 
-
 /******************************************* CSS For Ammo and Gear Tables *******************************************/
 
 
@@ -454,42 +495,42 @@ header{
 }
 
 .weaponsAndAmmo {
-  display: flex; /* Enable flexbox */
-  justify-content: space-between; /* Add space between tables */
-  gap: 20px; /* Optional: Add spacing between tables */
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
   padding-top: 1%;
   padding-left: 10%;
   padding-right: 10%;  
 }
 
 .weapons-table, .ammo-table {
-  border: 1px solid #ddd; /* Optional: Add border for styling */
-  border-collapse: collapse; /* Merge borders */
-  width: 80%; /* Adjust table width */
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 80%;
 
   background-color: rgb(68, 122, 185, 0.5);
 }
 
 .ammo-table {
-  border: 1px solid #ddd; /* Optional: Add border for styling */
-  border-collapse: collapse; /* Merge borders */
-  width: 20%; /* Adjust table width */
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 20%;
 }
 
 .weapons-table th, .ammo-table th, 
 .weapons-table td, .ammo-table td {
-  border: 1px solid #ddd; /* Add border for cells */
-  padding: 8px; /* Add padding for readability */
-  text-align: left; /* Align text to the left */
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 
 .weapons-table th, .ammo-table th {
-  background-color: #325886; /* Add background color for headers */
+  background-color: #325886;
   color:#FFD700;
 }
 
 .weapons-table input, select{
-  background-color: #325886; /* Add background color for headers */
+  background-color: #325886;
   color:#FFD700;
   accent-color: #FFD700;
 }
@@ -498,23 +539,22 @@ header{
 .ammo-table input[type="number"], 
 .ammo-table select {
   width: 100%;
-  box-sizing: border-box; /* Includes padding and border in the width calculation */
-  margin: 0; /* Removes any default margin */
-  padding: 8px; /* Adjust padding as needed */
-  font-family: inherit; /* Matches the table's font style */
-  font-size: inherit; /* Matches the table's font size */
-  border: 1px solid #ccc; /* Optional: Adjust border style */
-  /* border-radius: 4px; /* Optional: Adds rounded corners */
+  box-sizing: border-box;
+  margin: 0;
+  padding: 8px;
+  font-family: inherit;
+  font-size: inherit;
+  border: 1px solid #ccc;
 
-  background-color: #325886; /* Add background color for headers */
+  background-color: #325886;
   color:#FFD700;
 }
 
 
 .ammo-table th {
   background-color: #325886;                                                    /* Add background color for headers */
-  table-layout: fixed; /* Forces the table to adhere to the specified column widths */
-  width: 100%; /* Ensure the table spans its container */
+  table-layout: fixed;
+  width: 100%; 
 }
 
 .ammo-table select, input{
@@ -537,31 +577,35 @@ header{
 /******************************************* CSS For Gear and Perks *******************************************/
 
 .gearAndPerks {
-  display: flex; /* Enable flexbox */
-  justify-content: space-between; /* Add space between tables */
+  display: flex;
+  justify-content: space-between;
   padding-top: 1%;
   padding-left: 5%;
   padding-right: 5%;
 }
 
 .gear-section {
-  border: 1px solid #ddd; /* Optional: Add border for styling */
-  border-collapse: collapse; /* Merge borders */
-  width: 35%; /* Adjust table width */
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 35%;
 }
 
 .gear-table th, .gear-table td {
-  border: 1px solid #ddd; /* Add border for cells */
-  padding: 8px; /* Add padding for readability */
-  text-align: left; /* Align text to the left */
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 
-  background-color: #325886; /* Add background color for headers */
+  background-color: #325886;
   color:#FFD700;
 }
 
 .gear-table th {
-  table-layout: fixed; /* Forces the table to adhere to the specified column widths */
-  width: 100%; /* Ensure the table spans its container */
+  table-layout: fixed;
+  width: 100%;
+}
+
+.gear-table td{
+  background-color: rgb(68, 122, 185, 0.5);
 }
 
 .gear-section th.gear-item-th {                                                   /* Sets width for the "Item" column */
@@ -580,13 +624,16 @@ header{
 .gear-table input[type="number"], 
 .gear-table textarea {
   width: 100%;
-  box-sizing: border-box; /* Includes padding and border in the width calculation */
-  margin: 0; /* Removes any default margin */
-  padding: 8px; /* Adjust padding as needed */
-  font-family: inherit; /* Matches the table's font style */
-  font-size: inherit; /* Matches the table's font size */
-  border: 1px solid #ccc; /* Optional: Adjust border style */
-  /* border-radius: 4px; /* Optional: Adds rounded corners */
+  box-sizing: border-box;
+  margin: 0;
+  padding: 8px;
+  font-family: inherit;
+  font-size: inherit;
+  border: 1px solid #ccc;
+}
+
+.gear-table input::placeholder{
+  color: rgba(255, 204, 0, 1);
 }
 
 .carry-weight{
@@ -606,9 +653,9 @@ header{
 /******************************************* CSS For Perks *******************************************/
 
 .perk-section {
-  border: 1px solid #ddd; /* Optional: Add border for styling */
-  border-collapse: collapse; /* Merge borders */
-  width: 65%; /* Adjust table width */
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 65%;
 }
 
 .perk-section th.perk-name-th {                                                  /*  THIS IS ACTUALLY SETTING WIDTH FOR TABLE HEADER AND BODY     */
@@ -638,28 +685,35 @@ header{
 .perks-table input[type="number"], 
 .perks-table textarea {
     width: 100%;
-    box-sizing: border-box; /* Includes padding and border in the width calculation */
-    margin: 0; /* Removes any default margin */
-    padding: 8px; /* Adjust padding as needed */
-    font-family: inherit; /* Matches the table's font style */
-    font-size: inherit; /* Matches the table's font size */
-    border: 1px solid #ccc; /* Optional: Adjust border style */
-    /* border-radius: 4px; /* Optional: Adds rounded corners */
-    background-color: #325886;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid #ccc;
     color: #FFD700;
+    background-color: #325886;
 }
 
 .perks-table {
-  table-layout: fixed; /* Forces the table to adhere to the specified column widths */
-  width: 100%; /* Ensure the table spans its container */
+  table-layout: fixed;
+  width: 100%;
+}
+
+.perks-table input::placeholder, .perks-table textarea::placeholder{
+  color: rgba(255, 204, 0, 1);
 }
 
 .perks-table th, .perks-table td {
-  border: 1px solid #ddd; /* Add border for cells */
-  padding: 8px; /* Add padding for readability */
-  text-align: left; /* Align text to the left */
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 
 .perks-table th {
-  background-color: #f2f2f2; /* Add background color for headers */
+  background-color: #325886;
+}
+
+.perks-table td {
+  background-color: rgb(68, 122, 185, 0.5);
 }

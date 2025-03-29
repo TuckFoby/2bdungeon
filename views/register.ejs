@@ -1,46 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Register</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<%= csrfToken %>">
-    <title>Register</title>
+    <style>
+        .error-messages {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 1em;
+        }
+        .error-messages ul {
+            padding-left: 1.2em;
+        }
+        .error-messages li {
+            margin-bottom: 0.25em;
+        }
+    </style>    
 </head>
 <body>
     <h1>Register</h1>
-
-    <!-- CSRF Protection -->
-    <input type="hidden" id="csrfToken" value="<%= csrfToken %>">
-
-    <!-- Display Errors as an Alert Box -->
-    <% if (typeof errors !== "undefined" && errors.length > 0) { %>
-        <script>
-            alert("<%= errors.map(error => error.msg).join('\\n') %>");
-        </script>
-    <% } %>
-
-    <form action="/register" method="POST">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <form action="/register" method="POST" id="register_form">
+        <% if (errors.length > 0) { %>
+            <div class="error-messages">
+                <ul>
+                    <% errors.forEach(function(error) { %>
+                        <li><%= error.path %>: <%= error.msg %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% } %>        
         <div>
             <label for="name">Name</label>
-            <input type="text" id="name" name="name" value="<%= name || '' %>" required>
+            <input type="text" id="name" name="name" required>
         </div>
         <div>
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="<%= email || '' %>" required>
+            <input type="email" id="email" name="email" required>
         </div>
         <div>
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
         </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button type="submit">Register</button>
     </form>
-
-    <form action="/logout" method="POST">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <button type="submit">Logout</button>
-    </form>
-    
+    <a href="/login">Login</a>
+    <script src="/register_script.js"></script>
 </body>
 </html>
