@@ -30,33 +30,33 @@ mongoose.connect(process.env.DATABASE_URL, {
 });
 
 // nodemailer transporter for sending emails
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS
+//     }
+// });
 
 // function for email verification
-const sendVerificationEmail = async (userEmail, userID) => {
-    const verificationLink = `http://localhost:30000/verify-email?token=${userID}`;
+// const sendVerificationEmail = async (userEmail, userID) => {
+//     const verificationLink = `http://localhost:30000/verify-email?token=${userID}`;
     
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: userEmail,
-        subject: 'Verify Your Email',
-        html: `<p>Click the link below to verify your email:</p>
-               <a href="${verificationLink}">${verificationLink}</a>`
-    };
+//     const mailOptions = {
+//         from: process.env.EMAIL_USER,
+//         to: userEmail,
+//         subject: 'Verify Your Email',
+//         html: `<p>Click the link below to verify your email:</p>
+//                <a href="${verificationLink}">${verificationLink}</a>`
+//     };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Verification email sent to ${userEmail}`);
-    } catch (error) {
-        console.error('Error sending email:', error);
-    }
-};
+//     try {
+//         await transporter.sendMail(mailOptions);
+//         console.log(`Verification email sent to ${userEmail}`);
+//     } catch (error) {
+//         console.error('Error sending email:', error);
+//     }
+// };
 
 const app = express();
 const server = http.createServer(app);
