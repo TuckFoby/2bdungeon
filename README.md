@@ -1,5 +1,5 @@
 **Disclaimer**
-This is a fan project that is in no way associated with Fallout Tabletop RPG or Modiphius Entertainment, Bethesda Softworks, or the Fallout Franchise in general. 
+This is a fan project that is in no way associated with Fallout Tabletop RPG, Modiphius Entertainment, Bethesda Softworks, or the Fallout Franchise in general. 
 
 **Description**
 This project is a web-based companion app for Fallout TTRPG; the website allows players to create accounts for themselves so they can store user-specific information related to their in-game characters (SPECIAL stats, Skills, perks, inventory, equipped gear). Of course, the design theme is based on the legendary post-apocalyptic game series. 
