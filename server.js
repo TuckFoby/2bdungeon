@@ -20,7 +20,7 @@ const passport = require('passport');
 const nodemailer = require('nodemailer');
 
 // database Connection
-mongoose.connect(process.env.DATABASE_URL, {
+mongoose.connect(process.env.DATABASE_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
@@ -351,11 +351,22 @@ io.use((socket, next) => { // auth check
 const MAX_MESSAGE_LENGTH = 500;
 const ALLOWED_PATTERN = /^[a-zA-Z0-9 .,!?'"()=\-\u{1F3B2}]+$/u;
 
+function containsBannedWord(message) {
+    const bannedWords = (process.env.BANNED_WORDS || "")
+        .split(',')
+        .map(word => word.trim())
+        .filter(word => word.length > 0); // remove blanks
+
+    const lowerMessage = message.toLowerCase();
+    return bannedWords.some(word => lowerMessage.includes(word));
+}
+
+
 io.on('connection', (socket) => {
     socket.emit('chat history', globalChatHistory);
 
     socket.on('chat message', ({ username, message }) => {
-        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)||containsBannedWord(message)) {
             console.log('Blocked message.');
             return;
         }
@@ -370,7 +381,7 @@ io.on('connection', (socket) => {
         const rollsOutput = rolls.map((roll, index) => `Dice ${index + 1} = ${roll}`).join(', ');
         const message = `🎲 Target number is ${target}. Rolls are ${rollsOutput}. Successes are ${successes}`;
 
-        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message) || containsBannedWord(message)) {
             console.log('Blocked roll message.');
             return;
         }
