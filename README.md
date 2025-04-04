@@ -13,5 +13,11 @@ Getting Started
 
 1. clone/download the repo
 2. install dependencies using npm install
-3. setup your environment variables in .env
-4. run the server use node
+3. setup mongodb backend; must be setup to receive connections from your server IP via mongoose
+4. setup your environment variables in .env; place and fill these fields in .env
+   a. SESSION_SECRET=[your unique secret word/phrase]
+   b. DATABASE_URI=[uri to your mongodb, usable by applications]
+   c. NODE_ENV=production
+   d. PORT=[your opened port]
+   e. BANNED_WORDS=[optional list of banned words for chat, listed like: bad1, bad2, bad3; otherwise, leave empty] 
+6. run the server
