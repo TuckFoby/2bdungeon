@@ -328,6 +328,10 @@ app.get('/verify-email', async (req, res) => {
     }
 });
 
+//global chat history that persists for the life of the server
+const globalChatHistory = [];
+
+
 io.use((socket, next) => {
     session_middleware(socket.request, {}, next);
 });
@@ -345,18 +349,10 @@ io.use((socket, next) => { // auth check
 });
 
 const MAX_MESSAGE_LENGTH = 500;
-const ALLOWED_PATTERN = /^[a-zA-Z0-9 .,!?'"()-]+$/;
+const ALLOWED_PATTERN = /^[a-zA-Z0-9 .,!?'"()=\-\u{1F3B2}]+$/u;
 
 io.on('connection', (socket) => {
-    const req = socket.request;
-
-    // session-based chat history
-    if (!req.session.chatHistory) {
-        req.session.chatHistory = [];
-    }
-
-    // send existing chat history to the client upon connection
-    socket.emit('chat history', req.session.chatHistory);
+    socket.emit('chat history', globalChatHistory);
 
     socket.on('chat message', ({ username, message }) => {
         if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
@@ -365,12 +361,22 @@ io.on('connection', (socket) => {
         }
 
         const chatEntry = { username, message, timestamp: new Date() };
-        req.session.chatHistory.push(chatEntry);
+        globalChatHistory.push(chatEntry);
 
-        // save session changes
-        req.session.save((err) => {
-            if (err) console.error('Session save error:', err);
-        });
+        io.emit('chat message', chatEntry);
+    });
+
+    socket.on('roll message', ({ username, target, rolls, successes, timestamp }) => {
+        const rollsOutput = rolls.map((roll, index) => `Dice ${index + 1} = ${roll}`).join(', ');
+        const message = `🎲 Target number is ${target}. Rolls are ${rollsOutput}. Successes are ${successes}`;
+
+        if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+            console.log('Blocked roll message.');
+            return;
+        }
+
+        const chatEntry = { username, message, timestamp: new Date(timestamp) };
+        globalChatHistory.push(chatEntry);
 
         io.emit('chat message', chatEntry);
     });
@@ -380,6 +386,66 @@ io.on('connection', (socket) => {
     });
 });
 
+
+// io.on('connection', (socket) => {
+//     const req = socket.request;
+
+//     // session-based chat history
+//     if (!req.session.chatHistory) {
+//         req.session.chatHistory = [];
+//     }
+
+//     // send existing chat history to the client upon connection
+//     socket.emit('chat history', req.session.chatHistory);
+
+//     socket.on('chat message', ({ username, message }) => {
+//         if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+//             console.log('Blocked message.');
+//             return;
+//         }
+
+//         const chatEntry = { username, message, timestamp: new Date() };
+//         req.session.chatHistory.push(chatEntry);
+
+//         // save session changes
+//         req.session.save((err) => {
+//             if (err) console.error('Session save error:', err);
+//         });
+
+//         io.emit('chat message', chatEntry);
+//     });
+
+//     socket.on('roll message', ({ username, target, rolls, successes, timestamp }) => {
+//         // build the roll output string
+//         const rollsOutput = rolls.map((roll, index) => `Dice ${index + 1} = ${roll}`).join(', ');
+    
+//         // create a sanitized message string
+//         const message = `🎲 Target number is ${target}. Rolls are ${rollsOutput}. Successes are ${successes}`;
+    
+//         //check if the message is too long or has bad characters
+//         //console.log(message.length)
+//         if (message.length > MAX_MESSAGE_LENGTH || !ALLOWED_PATTERN.test(message)) {
+//             console.log('Blocked roll message.');
+//             return;
+//         }
+    
+//         // Create chat entry
+//         const chatEntry = { username, message, timestamp: new Date(timestamp) };
+    
+//         // Add to chat history
+//         req.session.chatHistory.push(chatEntry);
+    
+//         // Save session and broadcast
+//         req.session.save((err) => {
+//             if (err) console.error('Session save error:', err);
+//         });
+    
+//         io.emit('chat message', chatEntry); // use the same event to display in chat box
+//     });    
+//     socket.on('disconnect', () => {
+//         console.log('A user disconnected.');
+//     });
+// });
 
 app.use((err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
