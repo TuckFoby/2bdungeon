@@ -1,13 +1,11 @@
 ///Chat Box////
-const socket = io(); // Connect to the server
+const socket = io(); // connect to the server
 const chatboxMessages = document.getElementById('chatbox-messages');
 const inputField = document.getElementById('chat-input');
 const sendButton = document.getElementById('send-button');
-
-// Username fetched from server (via template rendering)
 const username = document.getElementById('username').value;
 
-// Send message to the server
+// send message to the server
 sendButton.addEventListener('click', sendMessage);
 inputField.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
@@ -18,20 +16,11 @@ inputField.addEventListener('keydown', (event) => {
 function sendMessage() {
     const message = inputField.value.trim();
     if (message) {
-        socket.emit('chat message', { username, message }); // Emit the message and username to the server
-        inputField.value = ''; // Clear the input field
+        socket.emit('chat message', { username, message });
+        inputField.value = '';
     }
 }
 
-// Receive messages from the server
-// socket.on('chat message', ({ username, message }) => {
-//     const messageElement = document.createElement('div');
-//     messageElement.textContent = `${username}: ${message}`;
-//     chatboxMessages.appendChild(messageElement);
-
-//     // Scroll to the bottom
-//     chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
-// });
 socket.on('chat history', (history) => {
     const messagesContainer = document.getElementById('chatbox-messages');
     history.forEach(({ username, message, timestamp }) => {
@@ -47,11 +36,19 @@ socket.on('chat message', ({ username, message, timestamp }) => {
     msgEl.textContent = `[${new Date(timestamp).toLocaleTimeString()}] ${username}: ${message}`;
     messagesContainer.appendChild(msgEl);
 
-    // Optional: Auto-scroll to bottom
+    // autoscrolls to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 });
 
-
+socket.on('roll message', ({ username, target, rolls, successes, timestamp }) => {
+    const rollsOutput = rolls.map((roll, index) => `Dice ${index + 1} = ${roll}`).join(', ');
+    const message = `[${new Date(timestamp).toLocaleTimeString()}] ${username}: 🎲 Target: ${target}, Rolls: ${rollsOutput}, Successes: ${successes}`;
+    
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    chatboxMessages.appendChild(messageElement);
+    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     loadFromMongo();
@@ -92,9 +89,9 @@ async function saveToMongo() {
     }
 
     Object.keys(tagCheckBoxes).forEach(key => {
-        const checkbox = tagCheckBoxes[key]; // access tagCheckBoxes elements
-        tagCheckBoxes[key] = checkbox.checked ? "True" : "False"; // replace element with value depending on if-
-    }); // -checkbox was checked our not
+        const checkbox = tagCheckBoxes[key];
+        tagCheckBoxes[key] = checkbox.checked ? "True" : "False"; // replace element with value depending on if
+    }); //                                                           checkbox was checked our not
 
     //console.log(tagCheckBoxes) // check that values are updated
 
@@ -188,8 +185,6 @@ async function saveToMongo() {
 
         currentCarryWeight: document.getElementById('current-carry-weight').value || 0,
         maxCarryWeight: document.getElementById('max-carry-weight').value || 0
-
-        //APTotal: document.getElementById('APTotal').value || 0,
     };
 
     //collect from ammo table
@@ -283,24 +278,23 @@ function collectWeapons(stats) {
 
 
 function collectAmmo(stats) {
-    const rows = document.querySelectorAll('.ammo-table tbody tr'); // Select all rows in the table
+    const rows = document.querySelectorAll('.ammo-table tbody tr');
 
     rows.forEach((row, index) => {
-        // Generate a unique property name for each row, e.g., `row1`, `row2`, etc.
+        // generate a unique property name for each row, e.g., `row1`, `row2`
         const rowKey = `ammorow${index + 1}`;
 
-        // Collect the row's data
+        // collect the row's data
         const ammoSelect = row.querySelector('select[name="gearAmmo"]');
         const ammoQuantity = row.querySelector('input[name="ammo-quantity"]');
 
         if (ammoSelect && ammoQuantity) {
-            // Add a new property to the `stats` object for the current row
+            // add a new property to the `stats` object for the current row
             stats[rowKey] = {
-                ammo: ammoSelect.value || "No Ammo Selected", // Selected ammo value
-                quantity: parseInt(ammoQuantity.value, 10) || 0, // Ammo quantity
+                ammo: ammoSelect.value || "No Ammo Selected",
+                quantity: parseInt(ammoQuantity.value, 10) || 0,
             };
 
-            // You can modify the data here as needed
             if (stats[rowKey].quantity > 100) {
                 stats[rowKey].note = "High quantity"; // Add a note for high quantity
             }
@@ -312,27 +306,25 @@ function collectAmmo(stats) {
 
 function collectGear(stats) {
     //collect from gear table
-    const rows = document.querySelectorAll('.gear-table tbody tr'); // Select all rows in the table
+    const rows = document.querySelectorAll('.gear-table tbody tr');
     rows.forEach((row, index) => {
-        // Generate a unique property name for each row, e.g., `row1`, `row2`, etc.
+        // generate a unique property name for each row, e.g., `row1`, `row2`
         const rowKey = `gearrow${index + 1}`;
 
-        // Collect the row's data
+        // collect the row's data
         const gearInput = row.querySelector('input[name="gear-item"]');
         const amountInput = row.querySelector('input[name="gear-amount"]');
         const weightInput = row.querySelector('input[name="gear-weight"]');
 
         if (gearInput && weightInput) {
-            // Add a new property to the `stats` object for the current row
             stats[rowKey] = {
                 gear: gearInput.value || 0,
                 amount: amountInput.value || 0,
                 weight: parseInt(weightInput.value, 10) || 0, // weight quantity
             };
 
-            // You can modify the data here as needed
             if (stats[rowKey].quantity > 100) {
-                stats[rowKey].note = "High quantity"; // Add a note for high quantity
+                stats[rowKey].note = "High quantity"; // add a note for high quantity
             }
 
             console.log('Adding gear:', rowKey);
@@ -345,27 +337,24 @@ function collectGear(stats) {
 
 function collectPerks(stats) {
     //collect from perk table
-    const rows = document.querySelectorAll('.perks-table tbody tr'); // Select all rows in the table
+    const rows = document.querySelectorAll('.perks-table tbody tr');
     rows.forEach((row, index) => {
-        // Generate a unique property name for each row, e.g., `row1`, `row2`, etc.
+        // generate a unique property name for each row, e.g., `row1`, `row2`
         const rowKey = `perkrow${index + 1}`;
 
-        // Collect the row's data
         const perkNameInput = row.querySelector('input[name="perk-name"]');
         const perkRankInput = row.querySelector('input[name="perk-rank"]');
         const perkEffectInput = row.querySelector('textarea[name="perk-effect"]');
 
         if (perkNameInput && perkRankInput && perkEffectInput) {
-            // Add a new property to the `stats` object for the current row
             stats[rowKey] = {
                 perkName: perkNameInput.value || 0,
                 perkRank: perkRankInput.value || 0,
                 perkEffect: perkEffectInput.value || 0,
             };
 
-            // You can modify the data here as needed
             if (stats[rowKey].quantity > 100) {
-                stats[rowKey].note = "High quantity"; // Add a note for high quantity
+                stats[rowKey].note = "High quantity"; // add a note for high quantity
             }
 
             console.log('Adding perk:', rowKey);
@@ -375,16 +364,14 @@ function collectPerks(stats) {
 }
 
 function loadWeapons(stats) {
-    // Transform stats to extract weapon rows into an array
     const weaponKeys = Object.keys(stats).filter(key => key.startsWith('weprow'));
     const weapons = weaponKeys.map(key => stats[key]);
 
-    // Select all rows in the weapons table
     const rows = document.querySelectorAll('.weapons-table tbody tr');
 
-    // Iterate through each row and set the values
+    // iterate through each row and set the values
     rows.forEach((row, index) => {
-        const weapon = weapons[index]; // Get the weapon data for the current row
+        const weapon = weapons[index];
 
         if (weapon) {
             row.querySelector('input[name="wep-name"]').value = weapon.wepName || '';
@@ -393,7 +380,7 @@ function loadWeapons(stats) {
             row.querySelector('input[name="wep-tag"]').checked = weapon.wepTAG === true;
             row.querySelector('input[name="wep-damage"]').value = weapon.wepDamage || 0;
 
-            // Set multiple-select values for effects
+            // set multiple-select values for effects
             const effectsSelect = row.querySelector('select[name="wep-effects"]');
             if (effectsSelect) {
                 Array.from(effectsSelect.options).forEach(option => {
@@ -405,7 +392,6 @@ function loadWeapons(stats) {
             row.querySelector('input[name="wepRate"]').value = weapon.wepRate || 0;
             row.querySelector('select[name="wep-range"]').value = weapon.wepRange || '';
 
-            // Set multiple-select values for qualities
             const qualitiesSelect = row.querySelector('select[name="wep-qualities"]');
             if (qualitiesSelect) {
                 Array.from(qualitiesSelect.options).forEach(option => {
@@ -413,7 +399,6 @@ function loadWeapons(stats) {
                 });
             }
 
-            // Set multiple-select values for ammo
             const ammoSelect = row.querySelector('select[name="wep-ammo"]');
             if (ammoSelect) {
                 Array.from(ammoSelect.options).forEach(option => {
@@ -423,7 +408,7 @@ function loadWeapons(stats) {
 
             row.querySelector('input[name="wep-weight"]').value = weapon.wepWeight || 0;
         } else {
-            // Clear the row if no weapon data is available
+            // clear the row if no weapon data is available
             row.querySelector('input[name="wep-name"]').value = '';
             row.querySelector('select[name="wep-skill"]').value = '';
             row.querySelector('input[name="wep-target-number"]').value = 0;
@@ -459,29 +444,22 @@ function loadWeapons(stats) {
     });
 }
 
-
-
 function loadAmmo(stats) {
-    // Transform stats to extract ammo rows into an array
     const ammoKeys = Object.keys(stats).filter(key => key.startsWith('ammorow'));
     const ammoDataArray = ammoKeys.map(key => stats[key]);
 
-    // Select all rows in the ammo table
     const ammoRows = document.querySelectorAll('.ammo-table tbody tr');
 
-    // Iterate through each row and set the values
+    // iterate through each row and set the values
     ammoRows.forEach((row, index) => {
-        const ammoData = ammoDataArray[index]; // Get the corresponding ammo data
-
+        const ammoData = ammoDataArray[index];
         if (ammoData) {
-            // Correctly access ammoType from the nested ammoData object
-            const ammoType = ammoData.ammo || ''; // Default to an empty string if undefined
+            const ammoType = ammoData.ammo || '';
 
-            // Debug: Log to check ammoType and available options
-            console.log("Setting ammo type:", ammoType);
-            console.log("Available options:", Array.from(row.querySelector('select[name="gearAmmo"]').options).map(option => option.value));
+            // debug: Log to check ammoType and available options
+            //console.log("Setting ammo type:", ammoType);
+            //console.log("Available options:", Array.from(row.querySelector('select[name="gearAmmo"]').options).map(option => option.value));
 
-            // Set the ammo type in the select dropdown
             const selectField = row.querySelector('select[name="gearAmmo"]');
             if (selectField) {
                 const matchingOption = Array.from(selectField.options).find(option => option.value === ammoType);
@@ -489,17 +467,15 @@ function loadAmmo(stats) {
                     selectField.value = ammoType;
                 } else {
                     console.warn(`Ammo type ${ammoType} not found in dropdown options`);
-                    selectField.value = ''; // Default to empty if no match
+                    selectField.value = ''; // default to empty if no match
                 }
             }
 
-            // Set the ammo quantity in the input field
             const quantityField = row.querySelector('input[name="ammo-quantity"]');
             if (quantityField) {
                 quantityField.value = ammoData.quantity || 0;
             }
         } else {
-            // Clear the row if no ammo data is available
             const selectField = row.querySelector('select[name="gearAmmo"]');
             if (selectField) selectField.value = '';
             
@@ -509,27 +485,22 @@ function loadAmmo(stats) {
     });
 }
 
-
-
-
 function loadGear(stats) {
-    // Transform stats to extract gear rows into an array
+    // transform stats to extract gear rows into an array
     const gearKeys = Object.keys(stats).filter(key => key.startsWith('gearrow'));
     const gearDataArray = gearKeys.map(key => stats[key]);
 
-    // Select all rows in the gear table
     const gearRows = document.querySelectorAll('.gear-table tbody tr');
 
-    // Iterate through each row and set the values
+    // iterate through each row and set the values
     gearRows.forEach((row, index) => {
-        const gearData = gearDataArray[index]; // Get the corresponding gear data
+        const gearData = gearDataArray[index];
 
         if (gearData) {
             row.querySelector('input[name="gear-item"]').value = gearData.gear || '';
             row.querySelector('input[name="gear-amount"]').value = gearData.amount || 0;
             row.querySelector('input[name="gear-weight"]').value = gearData.weight || 0;
         } else {
-            // Clear the row if no gear data is available
             row.querySelector('input[name="gear-item"]').value = '';
             row.querySelector('input[name="gear-item"]').value = 0;
             row.querySelector('input[name="gear-weight"]').value = 0;
@@ -539,31 +510,25 @@ function loadGear(stats) {
 
 
 function loadPerks(stats) {
-    // Transform stats to extract perk rows into an array
     const perkKeys = Object.keys(stats).filter(key => key.startsWith('perkrow'));
     const perkDataArray = perkKeys.map(key => stats[key]);
 
-    // Select all rows in the perks table
     const perkRows = document.querySelectorAll('.perks-table tbody tr');
 
-    // Iterate through each row and set the values
+    // iterate through each row and set the values
     perkRows.forEach((row, index) => {
-        const perkData = perkDataArray[index]; // Get the corresponding perk data
+        const perkData = perkDataArray[index];
 
         if (perkData) {
-            // Set perk name
             const perkNameField = row.querySelector('input[name="perk-name"]');
             if (perkNameField) perkNameField.value = perkData.perkName || '';
 
-            // Set perk rank
             const perkRankField = row.querySelector('input[name="perk-rank"]');
             if (perkRankField) perkRankField.value = perkData.perkRank || 1;
 
-            // Set perk effect
             const perkEffectField = row.querySelector('textarea[name="perk-effect"]');
             if (perkEffectField) perkEffectField.value = perkData.perkEffect || '';
         } else {
-            // Clear the row if no perk data is available
             const perkNameField = row.querySelector('input[name="perk-name"]');
             if (perkNameField) perkNameField.value = '';
 
@@ -638,15 +603,21 @@ function rollForSkill(attributeValue, skillValue, APValue, skillID) {
         document.getElementById('ap-total').value -= 6;
     }
 
-    // Calculate successes
+    // calculate successes
     rolls.forEach((roll) => {
         if (roll === 1) successes += 2;
         else if (roll <= target) successes++;
     });
 
-    // Append message to the chatbox
-    appendMessage(target, rolls, successes);
-
+    // append message to the chatbox
+    socket.emit('roll message', {
+        username,
+        target,
+        rolls,
+        successes,
+        timestamp: Date.now()
+    });
+    
     if (reSave) {
         saveToMongo();
     }
